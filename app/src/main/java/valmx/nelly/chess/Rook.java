@@ -4,14 +4,74 @@ import java.util.LinkedList;
 
 public class Rook extends Figure {
     public Rook(int team, int x, int y) {
-        super(team,x,y);
+        super(team, x, y);
     }
 
     @Override
     public LinkedList<MoveInfo> getPossibleMoves(Figure[][] field) {
 
-        field
+        LinkedList<MoveInfo> possibleMoves = new LinkedList<>();
 
-        return null;
+        // Y UP
+
+        for (int i = 1; i < 8; i++) {
+            int testY = y - i;
+
+            if (testY == -1) break;
+
+            Figure figure = field[x][testY];
+
+            if (figure == null) {
+                possibleMoves.add(new MoveInfo(x, testY, MoveInfo.Action.MOVE));
+            } else if (figure.team == team) {
+                break;
+            } else possibleMoves.add(new MoveInfo(x, testY, MoveInfo.Action.CAPTURE));
+        }
+        // Y DOWN
+
+        for (int i = 1; true; i++) {
+            int testY = x + i;
+
+            if (testY == 8) break;
+
+            Figure figure = field[x][testY];
+            if (figure == null) {
+                possibleMoves.add(new MoveInfo(x, testY, MoveInfo.Action.MOVE));
+            } else if (figure.team == team) {
+                break;
+            } else possibleMoves.add(new MoveInfo(x, testY, MoveInfo.Action.CAPTURE));
+        }
+
+        // X UP
+
+        for (int i = 1; i < 8; i++) {
+            int testX = x - i;
+
+            if (testX == -1) break;
+
+            Figure figure = field[testX][y];
+
+            if (figure == null) {
+                possibleMoves.add(new MoveInfo(testX, y, MoveInfo.Action.MOVE));
+            } else if (figure.team == team) {
+                break;
+            } else possibleMoves.add(new MoveInfo(testX, y, MoveInfo.Action.CAPTURE));
+        }
+        // X DOWN
+
+        for (int i = 1; true; i++) {
+            int testX = x + i;
+
+            if (testX == 8) break;
+
+            Figure figure = field[testX][y];
+            if (figure == null) {
+                possibleMoves.add(new MoveInfo(testX, y, MoveInfo.Action.MOVE));
+            } else if (figure.team == team) {
+                break;
+            } else possibleMoves.add(new MoveInfo(testX, y, MoveInfo.Action.CAPTURE));
+        }
+
+        return possibleMoves;
     }
 }

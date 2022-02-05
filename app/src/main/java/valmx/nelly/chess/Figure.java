@@ -3,9 +3,9 @@ package valmx.nelly.chess;
 import java.util.LinkedList;
 
 public abstract class Figure {
-    private int team;
-    private int x;
-    private int y;
+    protected int team;
+    protected int x;
+    protected int y;
 
     public Figure(int team,int x, int y) {
         this.team = team;
