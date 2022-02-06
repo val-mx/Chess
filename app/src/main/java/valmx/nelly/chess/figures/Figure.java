@@ -1,4 +1,4 @@
-package valmx.nelly.chess;
+package valmx.nelly.chess.figures;
 
 import java.util.LinkedList;
 
@@ -30,6 +30,10 @@ public abstract class Figure {
         return x;
     }
 
+    public int getTeam() {
+        return team;
+    }
+
     public void setTeam(int team) {
         this.team = team;
     }
@@ -43,5 +47,21 @@ public abstract class Figure {
     }
 
     abstract public LinkedList<MoveInfo> getPossibleMoves(Figure[][] field);
+
+    protected void processAction(Figure[][] field, LinkedList<MoveInfo> info, Figure attacker, int x, int y) {
+
+        if (x < 0 || y < 0) return;
+        if (x > 7 || y > 7) return;
+
+
+        Figure fig = field[x][y];
+
+        if (fig == null) {
+            info.add(new MoveInfo(x, y, MoveInfo.Action.MOVE,this));
+        } else if (fig.team != attacker.team) {
+            info.add(new MoveInfo(x, y, MoveInfo.Action.CAPTURE,this));
+        }
+
+    }
 
 }

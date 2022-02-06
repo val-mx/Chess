@@ -1,4 +1,4 @@
-package valmx.nelly.chess;
+package valmx.nelly.chess.figures;
 
 import java.util.LinkedList;
 
@@ -22,11 +22,11 @@ public class Rook extends Figure {
             Figure figure = field[x][testY];
 
             if (figure == null) {
-                possibleMoves.add(new MoveInfo(x, testY, MoveInfo.Action.MOVE));
+                possibleMoves.add(new MoveInfo(x, testY, MoveInfo.Action.MOVE,this));
             } else if (figure.team == team) {
                 break;
             } else {
-                possibleMoves.add(new MoveInfo(x, testY, MoveInfo.Action.CAPTURE));
+                possibleMoves.add(new MoveInfo(x, testY, MoveInfo.Action.CAPTURE,this));
                 break;
             }
         }
@@ -39,11 +39,11 @@ public class Rook extends Figure {
 
             Figure figure = field[x][testY];
             if (figure == null) {
-                possibleMoves.add(new MoveInfo(x, testY, MoveInfo.Action.MOVE));
+                possibleMoves.add(new MoveInfo(x, testY, MoveInfo.Action.MOVE,this));
             } else if (figure.team == team) {
                 break;
             } else {
-                possibleMoves.add(new MoveInfo(x, testY, MoveInfo.Action.CAPTURE));
+                possibleMoves.add(new MoveInfo(x, testY, MoveInfo.Action.CAPTURE,this));
                 break;
             }
         }
@@ -58,11 +58,11 @@ public class Rook extends Figure {
             Figure figure = field[testX][y];
 
             if (figure == null) {
-                possibleMoves.add(new MoveInfo(testX, y, MoveInfo.Action.MOVE));
+                possibleMoves.add(new MoveInfo(testX, y, MoveInfo.Action.MOVE,this));
             } else if (figure.team == team) {
                 break;
             } else {
-                possibleMoves.add(new MoveInfo(testX, y, MoveInfo.Action.CAPTURE));
+                possibleMoves.add(new MoveInfo(testX, y, MoveInfo.Action.CAPTURE,this));
                 break;
             }
         }
@@ -75,11 +75,11 @@ public class Rook extends Figure {
 
             Figure figure = field[testX][y];
             if (figure == null) {
-                possibleMoves.add(new MoveInfo(testX, y, MoveInfo.Action.MOVE));
+                possibleMoves.add(new MoveInfo(testX, y, MoveInfo.Action.MOVE,this));
             } else if (figure.team == team) {
                 break;
             } else {
-                possibleMoves.add(new MoveInfo(testX, y, MoveInfo.Action.CAPTURE));
+                possibleMoves.add(new MoveInfo(testX, y, MoveInfo.Action.CAPTURE,this));
                 break;
             }
         }

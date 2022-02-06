@@ -1,4 +1,4 @@
-package valmx.nelly.chess;
+package valmx.nelly.chess.figures;
 
 import java.util.LinkedList;
 

@@ -1,4 +1,4 @@
-package valmx.nelly.chess;
+package valmx.nelly.chess.figures;
 
 import java.util.LinkedList;
 
@@ -23,7 +23,7 @@ public class Pawn extends Figure {
         Figure f = field[x][testY];
 
         if (f == null) {
-            info.add(new MoveInfo(x, testY, MoveInfo.Action.MOVE));
+            info.add(new MoveInfo(x, testY, MoveInfo.Action.PAWNMOVE,this));
             // Handling double move
             if (lastMove == -1) {
                 int testY2;
@@ -36,7 +36,7 @@ public class Pawn extends Figure {
                 Figure f2 = field[x][testY2];
 
                 if (f2 == null) {
-                    info.add(new MoveInfo(x, testY2, MoveInfo.Action.MOVE));
+                    info.add(new MoveInfo(x, testY2, MoveInfo.Action.PAWNMOVE,this));
                 }
 
             }
@@ -45,19 +45,22 @@ public class Pawn extends Figure {
 
         // Handling Capturing
 
-        if(x != 0) {
-            Figure possibleCaptureLeft = field[x-1][testY];
-            if(possibleCaptureLeft != null && possibleCaptureLeft.team != team) {
-                info.add(new MoveInfo(x-1,testY, MoveInfo.Action.CAPTURE));
+        if (x != 0) {
+            Figure possibleCaptureLeft = field[x - 1][testY];
 
-            }
+            if (possibleCaptureLeft != null && possibleCaptureLeft.team != team) {
+                info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.CAPTURE,this));
+            } else              info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE,this));
+
         }
 
-        if(x != 7) {
-            Figure possibleCaptureRight = field[x+1][testY];
-            if(possibleCaptureRight != null && possibleCaptureRight.team != team) {
-                info.add(new MoveInfo(x+1,testY, MoveInfo.Action.CAPTURE));
-            }
+        if (x != 7) {
+            Figure possibleCaptureRight = field[x + 1][testY];
+
+            if (possibleCaptureRight != null && possibleCaptureRight.team != team) {
+                info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.CAPTURE,this));
+            } else              info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE,this));
+
         }
 
 

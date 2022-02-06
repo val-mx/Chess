@@ -1,4 +1,4 @@
-package valmx.nelly.chess;
+package valmx.nelly.chess.figures;
 
 import java.util.LinkedList;
 
@@ -21,10 +21,10 @@ public class Bishop extends Figure {
             Figure f = field[tempX][tempY];
 
             if (f == null) {
-                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.MOVE));
+                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.MOVE, this));
             } else if (f.team == team) break;
             else {
-                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.CAPTURE));
+                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.CAPTURE, this));
                 break;
             }
         }
@@ -38,10 +38,10 @@ public class Bishop extends Figure {
             Figure f = field[tempX][tempY];
 
             if (f == null) {
-                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.MOVE));
+                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.MOVE, this));
             } else if (f.team == team) break;
             else {
-                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.CAPTURE));
+                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.CAPTURE, this));
                 break;
             }
         }
@@ -56,10 +56,10 @@ public class Bishop extends Figure {
             Figure f = field[tempX][tempY];
 
             if (f == null) {
-                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.MOVE));
+                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.MOVE, this));
             } else if (f.team == team) break;
             else {
-                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.CAPTURE));
+                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.CAPTURE, this));
                 break;
             }
         }
@@ -74,10 +74,10 @@ public class Bishop extends Figure {
             Figure f = field[tempX][tempY];
 
             if (f == null) {
-                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.MOVE));
+                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.MOVE, this));
             } else if (f.team == team) break;
             else {
-                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.CAPTURE));
+                info.add(new MoveInfo(tempX, tempY, MoveInfo.Action.CAPTURE, this));
                 break;
 
             }
