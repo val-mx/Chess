@@ -10,7 +10,7 @@ public class MoveInfo {
     private Figure actor;
 
     public enum Action {
-        MOVE, CAPTURE, PAWNMOVE, POSSIBLEPAWNCAPTURE
+        MOVE, CAPTURE, PAWNMOVE, POSSIBLEPAWNCAPTURE, ROCHADE_LEFT, ROCHADE_RIGHT, ENPASSANT, PAWNMOVE_DOUBLE;
     }
 
     public MoveInfo(int x, int y, Action action, Figure actor) {
@@ -34,5 +34,9 @@ public class MoveInfo {
 
     public Figure getActor() {
         return actor;
+    }
+
+    public void setActor(Figure actor) {
+        this.actor = actor;
     }
 }

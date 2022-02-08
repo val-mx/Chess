@@ -1,14 +1,20 @@
 package valmx.nelly.chess;
 
 import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.ACTION_MOVE;
+import static android.view.MotionEvent.ACTION_UP;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,7 +22,9 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicReference;
 
 import valmx.nelly.chess.figures.Bishop;
 import valmx.nelly.chess.figures.Figure;
@@ -34,7 +42,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
     private Paint withePaint, blackPaint, helpPaint;
     private Float dx;
     private Figure[][] board = new Figure[8][8];
-    private int roundCounter = 1;
+    public static int ROUND = 1;
     private int playerToMove = 1;
 
     private DrawableManager drawableManager;
@@ -76,8 +84,8 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
             board[2][0] = new Bishop(1, 2, 0);
             board[5][0] = new Bishop(1, 5, 0);
             board[7][0] = new Rook(1, 7, 0);
-            board[3][0] = new Queen(1, 3, 0);
-            board[4][0] = new King(1, 4, 0);
+            board[4][0] = new Queen(1, 4, 0);
+            board[3][0] = new King(1, 3, 0);
             board[1][0] = new Horse(1, 1, 0);
             board[6][0] = new Horse(1, 6, 0);
 
@@ -86,14 +94,14 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
             board[2][7] = new Bishop(0, 2, 07);
             board[5][7] = new Bishop(0, 5, 07);
             board[7][7] = new Rook(0, 7, 7);
-            board[4][7] = new Queen(0, 4, 07);
-            board[3][7] = new King(0, 3, 07);
+            board[3][7] = new Queen(0, 3, 07);
+            board[4][7] = new King(0, 4, 07);
             board[1][7] = new Horse(0, 1, 07);
             board[6][7] = new Horse(0, 6, 07);
 
             drawCheckerBoard();
             drawFigures();
-            doBotAction();
+//            doBotAction();
             invalidate();
 
         });
@@ -126,6 +134,48 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
     }
 
+    boolean isKingThreatened;
+
+    private void onTurnChange() {
+        isKingThreatened = false;
+//        playerToMove;
+
+        AtomicReference<Figure> king = new AtomicReference<>();
+
+        HashMap<Figure, MoveInfo> attackers = new HashMap<>();
+
+        final LinkedList<MoveInfo> allPossibleMoves = WeightCalculator.getAllPossibleMoves(board, playerToMove);
+
+        allPossibleMoves.forEach(m -> {
+            if (m.getAction() == MoveInfo.Action.CAPTURE) {
+
+                Figure attackedFig = board[m.getX()][m.getY()];
+
+                if (attackedFig instanceof King && attackedFig.getTeam()
+                        == playerToMove) {
+                    attackers.put(m.getActor(), m);
+                    king.set(attackedFig);
+                }
+
+            }
+        });
+
+        LinkedList<MoveInfo> allowedMovesToSaveKing = new LinkedList<>(king.get().getPossibleMoves(board));
+
+        Figure k = king.get();
+
+        attackers.forEach((a,m) -> {
+            final LinkedList<MoveInfo> possibleMoves = a.getPossibleMoves(board);
+            allowedMovesToSaveKing.add(new MoveInfo(a.getX(),a.getY(),null,null));
+            possibleMoves.forEach(i -> {
+                if (i.getAction() != MoveInfo.Action.CAPTURE) {
+//                    if(i.getX()>)
+                }
+            });
+        });
+
+    }
+
     private void drawFigures() {
         for (int x = 0; x < board.length; x++) {
             for (int y = 0; y < board.length; y++) {
@@ -133,66 +183,54 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
                 if (f == null) continue;
 
+                if (!f.drawMe) continue;
+
                 Paint p;
 
-                Drawable drawable = null;
-                if (f.getTeam() == 0) {
-                    if (f instanceof Rook) {
-                        drawable = drawableManager.BLACK_ROOK;
-                    } else if (f instanceof Pawn) {
-                        drawable = drawableManager.BLACK_PAWN;
-                    } else if (f instanceof Bishop) {
-                        drawable = drawableManager.BLACK_BISHOP;
+                Drawable drawable = getDrawableForActor(f);
 
-                    } else if (f instanceof Queen) {
-                        drawable = drawableManager.BLACK_QUEEN;
-                    } else if (f instanceof King) {
-                        drawable = drawableManager.BLACK_KING;
-                    } else if (f instanceof Horse) {
-                        drawable = drawableManager.BLACK_KNIGHT;
-                    }
-
-                } else if (f instanceof Rook) {
-                    drawable = drawableManager.WHITE_ROOK;
-                } else if (f instanceof Pawn) {
-                    drawable = drawableManager.WHITE_PAWN;
-                } else if (f instanceof Bishop) {
-                    drawable = drawableManager.WHITE_BISHOP;
-
-                } else if (f instanceof Queen) {
-                    drawable = drawableManager.WHITE_QUEEN;
-                } else if (f instanceof King) {
-                    drawable = drawableManager.WHITE_KING;
-                } else if (f instanceof Horse) {
-                    drawable = drawableManager.WHITE_KNIGHT;
-                }
 
                 if (drawable != null) {
                     drawable.setBounds(Integer.parseInt(String.valueOf(dx * x).split("\\.")[0]), Integer.parseInt(String.valueOf(dx * y).split("\\.")[0]), Integer.parseInt(String.valueOf((x + 1) * dx).split("\\.")[0]), Integer.parseInt(String.valueOf((y + 1) * dx).split("\\.")[0]));
                     drawable.draw(c);
-                    continue;
-                }
-                if (f.getTeam() == 1) p = withePaint;
-                else p = blackPaint;
-
-                p.setTextSize(dx / 2);
-
-                if (f instanceof Rook)
-                    c.drawText("R", dx * (x + .5F), dx * y + dx * .5F, p);
-                else if (f instanceof Pawn) {
-                    c.drawText("P", dx * (x + .5F), dx * y + dx * .5F, p);
-                } else if (f instanceof Bishop) {
-                    c.drawText("B", dx * (x + .5F), dx * y + dx * .5F, p);
-                } else if (f instanceof Queen) {
-                    c.drawText("Q", dx * (x + .5F), dx * y + dx * .5F, p);
-                } else if (f instanceof King) {
-                    c.drawText("K", dx * (x + .5F), dx * y + dx * .5F, p);
-                }
-                if (f instanceof Horse) {
-                    c.drawText("H", dx * (x + .5F), dx * y + dx * .5F, p);
                 }
             }
         }
+    }
+
+    public Drawable getDrawableForActor(Figure f) {
+        Drawable drawable = null;
+        if (f.getTeam() == 0) {
+            if (f instanceof Rook) {
+                drawable = drawableManager.BLACK_ROOK;
+            } else if (f instanceof Pawn) {
+                drawable = drawableManager.BLACK_PAWN;
+            } else if (f instanceof Bishop) {
+                drawable = drawableManager.BLACK_BISHOP;
+
+            } else if (f instanceof Queen) {
+                drawable = drawableManager.BLACK_QUEEN;
+            } else if (f instanceof King) {
+                drawable = drawableManager.BLACK_KING;
+            } else if (f instanceof Horse) {
+                drawable = drawableManager.BLACK_KNIGHT;
+            }
+
+        } else if (f instanceof Rook) {
+            drawable = drawableManager.WHITE_ROOK;
+        } else if (f instanceof Pawn) {
+            drawable = drawableManager.WHITE_PAWN;
+        } else if (f instanceof Bishop) {
+            drawable = drawableManager.WHITE_BISHOP;
+
+        } else if (f instanceof Queen) {
+            drawable = drawableManager.WHITE_QUEEN;
+        } else if (f instanceof King) {
+            drawable = drawableManager.WHITE_KING;
+        } else if (f instanceof Horse) {
+            drawable = drawableManager.WHITE_KNIGHT;
+        }
+        return drawable;
     }
 
     private boolean doBotAction() {
@@ -236,7 +274,14 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         }
         if (!actionDone) {
             weights[maxX][maxY] = -1000;
-            doBotAction(weights);
+            Handler h = new android.os.Handler();
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    drawRoutine();
+
+                }
+            }, 200);
         }
 
 
@@ -245,7 +290,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
     private void drawWeights() {
 
-        int team = roundCounter % 2;
+        int team = ROUND % 2;
 
         int[][] weights = WeightCalculator.getWeights(board, team);
 
@@ -256,7 +301,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
                 if (weight == 0) continue;
                 Paint p;
-                if (roundCounter % 2 == 0) p = withePaint;
+                if (ROUND % 2 == 0) p = withePaint;
                 else p = blackPaint;
 
                 p.setTextSize(dx / 4);
@@ -266,12 +311,14 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         }
     }
 
+    int counter = 0;
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
         switch (event.getAction()) {
             case ACTION_DOWN:
+                counter = 0;
 
                 int x = (int) (event.getX() / dx);
                 int y = (int) (event.getY() / dx);
@@ -289,8 +336,10 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
                             doAction(activeFigure, i);
                             activeFigure = null;
                             activeMoveInfo = null;
-                            doBotAction();
-                            drawRoutine();
+//                            doBotAction();
+                            if (!isAnimationActive)
+
+                                drawRoutine();
                             return true;
                         }
 
@@ -310,31 +359,205 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
                     }
                 }
 
-                drawRoutine();
-
-
+                if (!isAnimationActive)
+                    drawRoutine();
+                break;
+            case ACTION_MOVE:
+                counter++;
+                break;
+            case ACTION_UP:
+                if(counter>8) {
+                    event.setAction(ACTION_DOWN);
+                    onTouch(v,event);
+                    return false;
+                }
         }
 
-        return false;
+        return true;
     }
 
     private void doAction(Figure f, MoveInfo i) {
-        board[f.getX()][f.getY()] = null;
-        f.setX(i.getX());
-        f.setY(i.getY());
-        f.setLastMove(roundCounter);
-        board[i.getX()][i.getY()] = f;
-        roundCounter++;
-        playerToMove = roundCounter % 2;
+
+
+        /*if (i.getAction() == MoveInfo.Action.ROCHADE_LEFT) {
+            board[f.getX()][f.getY()] = null;
+            board[f.getX() - 2][f.getY()] = f;
+            board[f.getX() - 1][f.getY()] = board[0][f.getY()];
+            board[0][f.getY()] = null;
+
+
+            f.setX(f.getX() - 2);
+            board[f.getX() - 1][f.getY()].setX(f.getX() - 1);
+
+        } else */
+        if (i.getAction() == MoveInfo.Action.ROCHADE_RIGHT || i.getAction() == MoveInfo.Action.ROCHADE_LEFT) {
+
+            int rookX = f.getX() + 1;
+            int kingX = f.getX() + 2;
+            int previousRookX = 7;
+
+            if (i.getAction() == MoveInfo.Action.ROCHADE_LEFT) {
+                rookX = f.getX() - 1;
+                kingX = f.getX() - 2;
+                previousRookX = 0;
+            }
+
+            board[f.getX()][f.getY()] = null;
+            board[kingX][f.getY()] = f;
+            board[rookX][f.getY()] = board[previousRookX][f.getY()];
+            board[previousRookX][f.getY()] = null;
+            Rook rook = (Rook) board[rookX][f.getY()];
+            animateMove(new MoveInfo(rookX, f.getY(), MoveInfo.Action.MOVE, rook));
+            animateMove(i);
+            rook.setX(rookX);
+            f.setX(kingX);
+
+        } else {
+            animateMove(i);
+            board[f.getX()][f.getY()] = null;
+            f.setX(i.getX());
+            f.setY(i.getY());
+            board[i.getX()][i.getY()] = f;
+
+            if (i.getAction() == MoveInfo.Action.ENPASSANT) {
+
+                int testY = i.getY();
+
+                if (f.getTeam() == 0) {
+                    testY++;
+                } else testY--;
+
+                board[i.getX()][testY] = null;
+
+            }
+
+        }
+
+        if (i.getAction() == MoveInfo.Action.PAWNMOVE_DOUBLE) {
+            ((Pawn) i.getActor()).lastDoubleMove = ROUND;
+        }
+
+        f.setLastMove(ROUND);
+        ROUND++;
+        playerToMove = ROUND % 2;
     }
 
     private void drawRoutine() {
         drawCheckerBoard();
         drawFigures();
         drawPossibleMoves(activeMoveInfo);
-        drawWeights();
+//        drawWeights();
         invalidate();
     }
+
+    boolean isAnimationActive = false;
+    int activeAnimations = 0;
+    LinkedList<AnimationBundle> animationsBundles = new LinkedList<>();
+
+    protected class AnimationBundle {
+        private float x;
+        private float y;
+        private Figure f;
+
+        public AnimationBundle(float x, float y, Figure f) {
+            this.x = x;
+            this.y = y;
+            this.f = f;
+        }
+
+        public Figure getF() {
+            return f;
+        }
+
+        public float getX() {
+            return x;
+        }
+
+        public float getY() {
+            return y;
+        }
+    }
+
+
+    public void animateMove(MoveInfo i) {
+
+        final Figure actor = i.getActor();
+        final ValueAnimator animator = ValueAnimator.ofFloat(0F, 1F);
+
+        float startX = actor.getX() * dx;
+        float endX = i.getX() * dx;
+        float startY = actor.getY() * dx;
+        float endY = i.getY() * dx;
+
+        Float diffX = startX - endX;
+        Float diffY = startY - endY;
+
+        float maxDimension;
+
+        if (Math.abs(diffX) > Math.abs(diffY)) maxDimension = diffX;
+        else maxDimension = diffY;
+
+        animator.setDuration((long) (Math.abs(maxDimension / dx * 400L)));
+        isAnimationActive = true;
+        actor.drawMe = false;
+        activeAnimations++;
+
+        animator.addUpdateListener(l -> {
+            Float value = (Float) l.getAnimatedValue();
+            animationsBundles.add(new AnimationBundle(startX - diffX * value, startY - diffY * value, actor));
+            tryToExecuteAnims();
+        });
+
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                actor.drawMe = true;
+                if (!isAnimationActive)
+
+                    drawRoutine();
+                isAnimationActive = false;
+                activeAnimations--;
+                tryToExecuteAnims();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        animator.start();
+
+
+    }
+
+    public void tryToExecuteAnims() {
+
+        if (animationsBundles.size() >= activeAnimations) {
+            drawRoutine();
+            animationsBundles.forEach(b -> {
+                drawFigAtLocation(b.getF(), b.getX(), b.getY());
+            });
+            invalidate();
+            animationsBundles = new LinkedList<>();
+        }
+    }
+
+    public void drawFigAtLocation(Figure actor, float x, float y) {
+        Drawable drawable = getDrawableForActor(actor);
+        drawable.setBounds(new Rect((int) x, (int) y, (int) (x + dx), (int) (y + dx)));
+        drawable.draw(c);
+    }
+
 
     public void drawPossibleMoves(LinkedList<MoveInfo> info) {
         if (info == null) return;

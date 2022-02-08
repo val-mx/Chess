@@ -70,7 +70,49 @@ public class King extends Figure {
             }
 
         }
-        ;
+
+        if (lastMove == -1) {
+            for (int i = 1; i < 19; i++) {
+
+                testX = x - i;
+
+
+                Figure fig = field[testX][y];
+                if (fig != null && testX != 0) {
+                    break;
+                } else if (fig instanceof Rook) {
+                    if (fig.lastMove == -1) {
+                        MoveInfo inf = new MoveInfo(x - 2, y, MoveInfo.Action.ROCHADE_LEFT, this);
+                        info.add(inf);
+                        break;
+                    }
+                }
+
+                if (testX == 0) break;
+
+            }
+
+            for (int i = 1; i < 19; i++) {
+
+                testX = x + i;
+
+
+                Figure fig = field[testX][y];
+                if (fig != null && testX != 7) {
+                    break;
+                } else if (fig instanceof Rook) {
+                    if (fig.lastMove == -1) {
+                        MoveInfo inf = new MoveInfo(x + 2, y, MoveInfo.Action.ROCHADE_RIGHT, this);
+                        info.add(inf);
+                        break;
+                    }
+                }
+
+                if (testX == 7) break;
+
+            }
+        }
+
 
         return info;
     }

@@ -7,6 +7,7 @@ public abstract class Figure {
     protected int x;
     protected int y;
     protected int lastMove = -1;
+    public boolean drawMe = true;
 
     public void setLastMove(int lastMove) {
         this.lastMove = lastMove;

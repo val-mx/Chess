@@ -1,11 +1,16 @@
 package valmx.nelly.chess.figures;
 
+import static valmx.nelly.chess.ChessView.ROUND;
+
 import java.util.LinkedList;
 
 public class Pawn extends Figure {
+
     public Pawn(int team, int x, int y) {
         super(team, x, y);
     }
+
+    public int lastDoubleMove = -2;
 
     @Override
     public LinkedList<MoveInfo> getPossibleMoves(Figure[][] field) {
@@ -23,7 +28,7 @@ public class Pawn extends Figure {
         Figure f = field[x][testY];
 
         if (f == null) {
-            info.add(new MoveInfo(x, testY, MoveInfo.Action.PAWNMOVE,this));
+            info.add(new MoveInfo(x, testY, MoveInfo.Action.PAWNMOVE, this));
             // Handling double move
             if (lastMove == -1) {
                 int testY2;
@@ -36,7 +41,7 @@ public class Pawn extends Figure {
                 Figure f2 = field[x][testY2];
 
                 if (f2 == null) {
-                    info.add(new MoveInfo(x, testY2, MoveInfo.Action.PAWNMOVE,this));
+                    info.add(new MoveInfo(x, testY2, MoveInfo.Action.PAWNMOVE_DOUBLE, this));
                 }
 
             }
@@ -49,8 +54,8 @@ public class Pawn extends Figure {
             Figure possibleCaptureLeft = field[x - 1][testY];
 
             if (possibleCaptureLeft != null && possibleCaptureLeft.team != team) {
-                info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.CAPTURE,this));
-            } else              info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE,this));
+                info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.CAPTURE, this));
+            } else info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE, this));
 
         }
 
@@ -58,8 +63,48 @@ public class Pawn extends Figure {
             Figure possibleCaptureRight = field[x + 1][testY];
 
             if (possibleCaptureRight != null && possibleCaptureRight.team != team) {
-                info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.CAPTURE,this));
-            } else              info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE,this));
+                info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.CAPTURE, this));
+            } else info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE, this));
+
+        }
+
+        // Literally En Passant
+
+        if (x != 0) {
+            Figure possibleEnPassantLeft = field[x - 1][y];
+
+            if (possibleEnPassantLeft != null && possibleEnPassantLeft.getTeam() != team) {
+                if (possibleEnPassantLeft instanceof Pawn) {
+                    if (((Pawn) possibleEnPassantLeft).lastDoubleMove == ROUND - 1) {
+                        int captureY;
+                        if (team == 0) {
+                            captureY = y - 1;
+                        } else {
+                            captureY = y + 1;
+                        }
+                        info.add(new MoveInfo(x - 1, captureY, MoveInfo.Action.ENPASSANT, this));
+                    }
+                }
+            }
+
+        }
+
+        if (x != 7) {
+            Figure possibleEnPassantLeft = field[x + 1][y];
+
+            if (possibleEnPassantLeft != null && possibleEnPassantLeft.getTeam() != team) {
+                if (possibleEnPassantLeft instanceof Pawn) {
+                    if (((Pawn) possibleEnPassantLeft).lastDoubleMove == ROUND - 1) {
+                        int captureY;
+                        if (team == 0) {
+                            captureY = y - 1;
+                        } else {
+                            captureY = y + 1;
+                        }
+                        info.add(new MoveInfo(x + 1, captureY, MoveInfo.Action.ENPASSANT, this));
+                    }
+                }
+            }
 
         }
 

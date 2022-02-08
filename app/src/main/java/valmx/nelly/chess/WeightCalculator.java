@@ -15,7 +15,17 @@ import valmx.nelly.chess.figures.Rook;
 public class WeightCalculator {
 
     public static int[][] getWeights(Figure[][] pieces, int team) {
-        int[][] weights = new int[8][8];
+        int[][] weights = {
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 3, 3, 3, 0, 0},
+                {10, 0, 0, 4, 4, 4, 0, 10},
+                {10, 0, 0, 4, 4, 4, 0, 10},
+                {0, 0, 0, 3, 3, 3, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0},
+
+        };
 
         LinkedList<MoveInfo> attacker = getAllPossibleMoves(pieces, team);
         LinkedList<MoveInfo> attacked = new LinkedList<>();
@@ -43,16 +53,16 @@ public class WeightCalculator {
                     int weightToSet = 0;
                     if (r.getX() == finalX && r.getY() == finalY) {
                         if (r.getAction() == MoveInfo.Action.MOVE)
-                            weightToSet+=1;
+                            weightToSet += 1;
                         else if (r.getAction() == MoveInfo.Action.CAPTURE)
-                            weightToSet+=getWorth(pieces[r.getX()][r.getY()]);
+                            weightToSet += getWorth(pieces[r.getX()][r.getY()]);
                         else if (r.getAction() == MoveInfo.Action.POSSIBLEPAWNCAPTURE)
-                            weightToSet+=3;
+                            weightToSet += 3;
 
                     }
                     weightSum.addAndGet(weightToSet);
                 });
-                weights[x][y] = weightSum.get();
+                weights[x][y] += weightSum.get();
             }
         }
 
@@ -72,12 +82,12 @@ public class WeightCalculator {
     }
 
     public static int getWorth(Figure f) {
-        if(f instanceof Pawn) return 1;
-        if(f instanceof Queen) return 4;
-        if(f instanceof Rook) return 3;
-        if(f instanceof King) return 8;
-        if(f instanceof Bishop) return 2;
-        if(f instanceof Horse) return 3;
-return  1000;
+        if (f instanceof Pawn) return 1;
+        if (f instanceof Queen) return 4;
+        if (f instanceof Rook) return 3;
+        if (f instanceof King) return 8;
+        if (f instanceof Bishop) return 2;
+        if (f instanceof Horse) return 3;
+        return 1000;
     }
 }

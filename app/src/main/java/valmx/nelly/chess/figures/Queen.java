@@ -15,6 +15,10 @@ public class Queen extends Figure {
         info.addAll(new Rook(team,x,y).getPossibleMoves(field));
         info.addAll(new Bishop(team,x,y).getPossibleMoves(field));
 
+        info.forEach(i -> {
+            i.setActor(this);
+        });
+
         return info;
     }
 }
