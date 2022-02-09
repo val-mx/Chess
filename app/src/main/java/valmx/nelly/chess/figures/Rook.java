@@ -86,4 +86,9 @@ public class Rook extends Figure {
 
         return possibleMoves;
     }
+
+    @Override
+    public Figure copy() {
+        return new Rook(team,x,y);
+    }
 }

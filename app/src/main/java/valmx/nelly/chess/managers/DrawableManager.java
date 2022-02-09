@@ -25,14 +25,14 @@ public class DrawableManager {
     @SuppressLint("UseCompatLoadingForDrawables")
     public DrawableManager(Resources res) {
 
-        BLACK_BISHOP = res.getDrawable(R.drawable.bishop_black);
+        BLACK_BISHOP = res.getDrawable(R.drawable.bishop_white);
         BLACK_PAWN = res.getDrawable(R.drawable.pawn_black);
         BLACK_KING = res.getDrawable(R.drawable.king_black);
         BLACK_QUEEN = res.getDrawable(R.drawable.queen_black);
         BLACK_KNIGHT = res.getDrawable(R.drawable.night_black);
         BLACK_ROOK = res.getDrawable(R.drawable.rook_black);
 
-        WHITE_BISHOP = res.getDrawable(R.drawable.bishop_white);
+        WHITE_BISHOP = res.getDrawable(R.drawable.ic_chess_blt45);
         WHITE_PAWN = res.getDrawable(R.drawable.pawn_white);
         WHITE_KING = res.getDrawable(R.drawable.king_white);
         WHITE_QUEEN = res.getDrawable(R.drawable.queen_white);

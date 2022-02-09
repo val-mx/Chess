@@ -116,4 +116,9 @@ public class King extends Figure {
 
         return info;
     }
+
+    @Override
+    public Figure copy() {
+        return new King(team,x,y);
+    }
 }

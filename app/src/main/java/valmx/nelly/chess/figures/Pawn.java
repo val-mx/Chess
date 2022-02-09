@@ -37,11 +37,12 @@ public class Pawn extends Figure {
                 } else {
                     testY2 = testY + 1;
                 }
+                if(testY != 0 && testY != 7) {
+                    Figure f2 = field[x][testY2];
 
-                Figure f2 = field[x][testY2];
-
-                if (f2 == null) {
-                    info.add(new MoveInfo(x, testY2, MoveInfo.Action.PAWNMOVE_DOUBLE, this));
+                    if (f2 == null) {
+                        info.add(new MoveInfo(x, testY2, MoveInfo.Action.PAWNMOVE_DOUBLE, this));
+                    }
                 }
 
             }
@@ -49,66 +50,76 @@ public class Pawn extends Figure {
         }
 
         // Handling Capturing
+        if(testY != 0 && testY != 7) {
 
-        if (x != 0) {
-            Figure possibleCaptureLeft = field[x - 1][testY];
+            if (x != 0) {
+                Figure possibleCaptureLeft = field[x - 1][testY];
 
-            if (possibleCaptureLeft != null && possibleCaptureLeft.team != team) {
-                info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.CAPTURE, this));
-            } else info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE, this));
+                if (possibleCaptureLeft != null && possibleCaptureLeft.team != team) {
+                    info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.CAPTURE, this));
+                } else
+                    info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE, this));
 
-        }
-
-        if (x != 7) {
-            Figure possibleCaptureRight = field[x + 1][testY];
-
-            if (possibleCaptureRight != null && possibleCaptureRight.team != team) {
-                info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.CAPTURE, this));
-            } else info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE, this));
-
-        }
-
-        // Literally En Passant
-
-        if (x != 0) {
-            Figure possibleEnPassantLeft = field[x - 1][y];
-
-            if (possibleEnPassantLeft != null && possibleEnPassantLeft.getTeam() != team) {
-                if (possibleEnPassantLeft instanceof Pawn) {
-                    if (((Pawn) possibleEnPassantLeft).lastDoubleMove == ROUND - 1) {
-                        int captureY;
-                        if (team == 0) {
-                            captureY = y - 1;
-                        } else {
-                            captureY = y + 1;
-                        }
-                        info.add(new MoveInfo(x - 1, captureY, MoveInfo.Action.ENPASSANT, this));
-                    }
-                }
             }
+            if (testY != 0 && testY != 7) {
 
-        }
+                if (x != 7) {
+                    Figure possibleCaptureRight = field[x + 1][testY];
 
-        if (x != 7) {
-            Figure possibleEnPassantLeft = field[x + 1][y];
+                    if (possibleCaptureRight != null && possibleCaptureRight.team != team) {
+                        info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.CAPTURE, this));
+                    } else
+                        info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE, this));
 
-            if (possibleEnPassantLeft != null && possibleEnPassantLeft.getTeam() != team) {
-                if (possibleEnPassantLeft instanceof Pawn) {
-                    if (((Pawn) possibleEnPassantLeft).lastDoubleMove == ROUND - 1) {
-                        int captureY;
-                        if (team == 0) {
-                            captureY = y - 1;
-                        } else {
-                            captureY = y + 1;
-                        }
-                        info.add(new MoveInfo(x + 1, captureY, MoveInfo.Action.ENPASSANT, this));
-                    }
                 }
+
+                // Literally En Passant
+//
+//                if (x != 0) {
+//                    Figure possibleEnPassantLeft = field[x - 1][y];
+//
+//                    if (possibleEnPassantLeft != null && possibleEnPassantLeft.getTeam() != team) {
+//                        if (possibleEnPassantLeft instanceof Pawn) {
+//                            if (((Pawn) possibleEnPassantLeft).lastDoubleMove == ROUND - 1) {
+//                                int captureY;
+//                                if (team == 0) {
+//                                    captureY = y - 1;
+//                                } else {
+//                                    captureY = y + 1;
+//                                }
+//                                info.add(new MoveInfo(x - 1, captureY, MoveInfo.Action.ENPASSANT, this));
+//                            }
+//                        }
+//                    }
+//
+//                }
+//
+//                if (x != 7) {
+//                    Figure possibleEnPassantLeft = field[x + 1][y];
+//
+//                    if (possibleEnPassantLeft != null && possibleEnPassantLeft.getTeam() != team) {
+//                        if (possibleEnPassantLeft instanceof Pawn) {
+//                            if (((Pawn) possibleEnPassantLeft).lastDoubleMove == ROUND - 1) {
+//                                int captureY;
+//                                if (team == 0) {
+//                                    captureY = y - 1;
+//                                } else {
+//                                    captureY = y + 1;
+//                                }
+//                                info.add(new MoveInfo(x + 1, captureY, MoveInfo.Action.ENPASSANT, this));
+//                            }
+//                        }
+//                    }
+//
+//                }
+
             }
-
         }
-
-
         return info;
+    }
+
+    @Override
+    public Figure copy() {
+        return new Pawn(team,x,y);
     }
 }

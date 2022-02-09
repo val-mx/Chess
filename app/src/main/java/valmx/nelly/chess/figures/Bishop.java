@@ -85,4 +85,9 @@ public class Bishop extends Figure {
 
         return info;
     }
+
+    @Override
+    public Figure copy() {
+        return new Bishop(team,x,y);
+    }
 }

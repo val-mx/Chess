@@ -8,6 +8,8 @@ public class MoveInfo {
     private final int y;
     private final Action action;
     private Figure actor;
+    public int chachedWoth = 0;
+    int worth = 0;
 
     public enum Action {
         MOVE, CAPTURE, PAWNMOVE, POSSIBLEPAWNCAPTURE, ROCHADE_LEFT, ROCHADE_RIGHT, ENPASSANT, PAWNMOVE_DOUBLE;
@@ -18,6 +20,14 @@ public class MoveInfo {
         this.y = y;
         this.action = action;
         this.actor = actor;
+    }
+
+    public int getWorth() {
+        return worth;
+    }
+
+    public void setWorth(int worth) {
+        this.worth = worth;
     }
 
     public Action getAction() {
@@ -38,5 +48,16 @@ public class MoveInfo {
 
     public void setActor(Figure actor) {
         this.actor = actor;
+    }
+
+    @Override
+    public String toString() {
+        return "MoveInfo{" +
+                "x=" + x +
+                ", y=" + y +
+                ", action=" + action +
+                ", actor=" + actor +
+                ", worth=" + worth +
+                '}';
     }
 }

@@ -65,4 +65,6 @@ public abstract class Figure {
 
     }
 
+    abstract public Figure copy();
+
 }
