@@ -16,6 +16,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -94,14 +95,16 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
             board[2][7] = new Bishop(0, 2, 07);
             board[5][7] = new Bishop(0, 5, 07);
             board[7][7] = new Rook(0, 7, 7);
-            board[3][7] = new Queen(0, 3, 07);
-            board[4][7] = new King(0, 4, 07);
+            board[4][7] = new Queen(0, 4, 07);
+            board[3][7] = new King(0, 3, 07);
             board[1][7] = new Horse(0, 1, 07);
             board[6][7] = new Horse(0, 6, 07);
 
+            Log.i("WERT DER STELLUNG", WeightCalculator.getWortSum(board) + "");
+
             drawCheckerBoard();
             drawFigures();
-//            doBotAction();
+            doBotAction();
             invalidate();
 
         });
@@ -234,56 +237,10 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
     }
 
     private boolean doBotAction() {
-        return doBotAction(WeightCalculator.getWeights(board, 1));
 
-    }
+        MoveInfo bestPossibleMove = WeightCalculator.getBestPossibleMove(board,0,null);
 
-    private boolean doBotAction(int[][] weights) {
-
-
-        int maxX = 0;
-        int maxY = 0;
-        int maxW = -100;
-
-        for (int x = 0; x < weights.length; x++) {
-            for (int y = 0; y < weights.length; y++) {
-                final int weight = weights[x][y];
-
-                if (maxW < weight) {
-                    maxW = weight;
-                    maxX = x;
-                    maxY = y;
-                }
-            }
-        }
-
-
-        LinkedList<MoveInfo> allPossibleMoves = WeightCalculator.getAllPossibleMoves(board, 1);
-
-        boolean actionDone = false;
-
-        for (MoveInfo move : allPossibleMoves) {
-            if (move.getY() == maxY)
-                if (move.getX() == maxX) {
-                    if (move.getAction() != MoveInfo.Action.POSSIBLEPAWNCAPTURE) {
-                        doAction(move.getActor(), move);
-                        actionDone = true;
-                        break;
-                    }
-                }
-        }
-        if (!actionDone) {
-            weights[maxX][maxY] = -1000;
-            Handler h = new android.os.Handler();
-            h.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    drawRoutine();
-
-                }
-            }, 200);
-        }
-
+        doAction(bestPossibleMove.getActor(),bestPossibleMove);
 
         return true;
     }
@@ -292,7 +249,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
         int team = ROUND % 2;
 
-        int[][] weights = WeightCalculator.getWeights(board, team);
+        int[][] weights = new int[9][8];
 
         for (int x = 0; x < board.length; x++) {
             for (int y = 0; y < board.length; y++) {
@@ -336,7 +293,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
                             doAction(activeFigure, i);
                             activeFigure = null;
                             activeMoveInfo = null;
-//                            doBotAction();
+                            doBotAction();
                             if (!isAnimationActive)
 
                                 drawRoutine();
@@ -353,7 +310,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
                 } else {
 
-                    if (temp.getTeam() == playerToMove) {
+                    if (temp.getTeam() == 1) {
                         activeFigure = temp;
                         activeMoveInfo = temp.getPossibleMoves(board);
                     }
@@ -497,7 +454,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         if (Math.abs(diffX) > Math.abs(diffY)) maxDimension = diffX;
         else maxDimension = diffY;
 
-        animator.setDuration((long) (Math.abs(maxDimension / dx * 400L)));
+        animator.setDuration(200L);
         isAnimationActive = true;
         actor.drawMe = false;
         activeAnimations++;

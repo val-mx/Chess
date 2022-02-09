@@ -2,7 +2,8 @@ package valmx.nelly.chess.figures;
 
 import java.util.LinkedList;
 
-public class Horse extends Figure {
+public class
+Horse extends Figure {
     public Horse(int team, int x, int y) {
         super(team, x, y);
     }
@@ -23,6 +24,11 @@ public class Horse extends Figure {
         processAction(figures, info, this, x - 2, y + 1);
 
         return info;
+    }
+
+    @Override
+    public Figure copy() {
+        return new Horse(team,x,y);
     }
 
 

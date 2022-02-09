@@ -21,4 +21,9 @@ public class Queen extends Figure {
 
         return info;
     }
+
+    @Override
+    public Figure copy() {
+        return new Queen(team,x,y);
+    }
 }
