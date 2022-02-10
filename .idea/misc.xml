@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/valpu/AndroidStudioProjects/Chess/app/src/main/res/drawable/bishop_black.xml" value="0.1" />
         <entry key="..\:/Users/valpu/AndroidStudioProjects/Chess/app/src/main/res/drawable/king_black.xml" value="0.1" />
         <entry key="..\:/Users/valpu/AndroidStudioProjects/Chess/app/src/main/res/drawable/night_black.xml" value="0.262037037037037" />
         <entry key="..\:/Users/valpu/AndroidStudioProjects/Chess/app/src/main/res/drawable/pawn_black.xml" value="0.262037037037037" />

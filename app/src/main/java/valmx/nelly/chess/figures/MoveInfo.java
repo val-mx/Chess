@@ -11,6 +11,10 @@ public class MoveInfo {
     public int chachedWoth = 0;
     int worth = 0;
 
+    public void invertWorth() {
+        worth*=-1;
+    }
+
     public enum Action {
         MOVE, CAPTURE, PAWNMOVE, POSSIBLEPAWNCAPTURE, ROCHADE_LEFT, ROCHADE_RIGHT, ENPASSANT, PAWNMOVE_DOUBLE;
     }

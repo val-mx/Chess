@@ -19,6 +19,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -236,11 +237,22 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         return drawable;
     }
 
+    public interface ResultRunnable {
+        public void run(MoveInfo i);
+    }
+
+
     private boolean doBotAction() {
 
-        MoveInfo bestPossibleMove = WeightCalculator.getBestPossibleMove(board,0,null);
 
-        doAction(bestPossibleMove.getActor(),bestPossibleMove);
+        ResultRunnable r = i -> {
+            doAction(i.getActor(),i);
+            drawRoutine();
+            Toast.makeText(getContext(),i.toString(),Toast.LENGTH_LONG).show();
+
+        };
+        WeightCalculator.getBestPossibleMove(board, r);
+
 
         return true;
     }
@@ -310,7 +322,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
                 } else {
 
-                    if (temp.getTeam() == 1) {
+                    if (temp.getTeam() == 0 && ROUND%2==0) {
                         activeFigure = temp;
                         activeMoveInfo = temp.getPossibleMoves(board);
                     }

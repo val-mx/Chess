@@ -57,8 +57,8 @@ public class Pawn extends Figure {
 
                 if (possibleCaptureLeft != null && possibleCaptureLeft.team != team) {
                     info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.CAPTURE, this));
-                } else
-                    info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE, this));
+                } /*else
+                    info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE, this));*/
 
             }
             if (testY != 0 && testY != 7) {
@@ -68,8 +68,8 @@ public class Pawn extends Figure {
 
                     if (possibleCaptureRight != null && possibleCaptureRight.team != team) {
                         info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.CAPTURE, this));
-                    } else
-                        info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE, this));
+                    } /*else
+                        info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE, this));*/
 
                 }
 
@@ -120,6 +120,10 @@ public class Pawn extends Figure {
 
     @Override
     public Figure copy() {
-        return new Pawn(team,x,y);
+        final Pawn pawn = new Pawn(team, x, y);
+
+        pawn.lastMove = lastMove;
+
+        return pawn;
     }
 }
