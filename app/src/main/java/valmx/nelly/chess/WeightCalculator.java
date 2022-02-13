@@ -34,7 +34,7 @@ public class WeightCalculator {
             @Override
             protected MoveInfo doInBackground(Void... voids) {
 //                return minMax(pieces, 5, true);
-                return minMax(pieces, 6, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
+                return minMax(pieces, 5, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
             }
 
             @Override
@@ -64,6 +64,9 @@ public class WeightCalculator {
             LinkedList<MoveInfo> allPossibleMoves = getAllPossibleMoves(pieces, 1);
 
             for (MoveInfo i : allPossibleMoves) {
+
+                if(i.getAction() == MoveInfo.Action.ROCHADE_LEFT || i.getAction() == MoveInfo.Action.ROCHADE_RIGHT) continue;
+
                 final Figure actor = i.getActor();
                 final int x = actor.getX();
                 final int y = actor.getY();
@@ -98,6 +101,8 @@ public class WeightCalculator {
             LinkedList<MoveInfo> allPossibleMoves = getAllPossibleMoves(pieces, 0);
 
             for (MoveInfo i : allPossibleMoves) {
+                if(i.getAction() == MoveInfo.Action.ROCHADE_LEFT || i.getAction() == MoveInfo.Action.ROCHADE_RIGHT) continue;
+
                 final Figure actor = i.getActor();
                 final int x = actor.getX();
                 final int y = actor.getY();
@@ -136,7 +141,12 @@ public class WeightCalculator {
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
                 sum += getWorth(figs[x][y]);
+                Figure figure = figs[x][y];
 
+                if(figure!= null) {
+                    if(figure.getTeam() == 1) sum+=baseWeights[x][y];
+                    else sum-=baseWeights[x][y];
+                }
             }
         }
         return sum;
