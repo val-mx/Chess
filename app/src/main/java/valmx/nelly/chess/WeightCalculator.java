@@ -16,7 +16,7 @@ import valmx.nelly.chess.figures.Rook;
 
 public class WeightCalculator {
 
-    private static int[][] baseWeights = {
+    private static final int[][] baseWeights = {
             {0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 90, 0, 0, 0, 0, 0},
             {0, 0, 120, 0, 0, 120, 0, 0},
@@ -24,7 +24,7 @@ public class WeightCalculator {
             {0, 0, 90, 0, 0, 90, 0, 0},
             {0, 0, 120, 0, 0, 120, 0, 0},
             {0, 0, 90, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0}
     };
 
 
@@ -34,7 +34,7 @@ public class WeightCalculator {
             @Override
             protected MoveInfo doInBackground(Void... voids) {
 //                return minMax(pieces, 5, true);
-                return minMax(pieces, 5, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
+                return minMax(copyArray(pieces), 5, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
             }
 
             @Override
@@ -65,7 +65,8 @@ public class WeightCalculator {
 
             for (MoveInfo i : allPossibleMoves) {
 
-                if(i.getAction() == MoveInfo.Action.ROCHADE_LEFT || i.getAction() == MoveInfo.Action.ROCHADE_RIGHT) continue;
+                if (i.getAction() == MoveInfo.Action.ROCHADE_LEFT || i.getAction() == MoveInfo.Action.ROCHADE_RIGHT)
+                    continue;
 
                 final Figure actor = i.getActor();
                 final int x = actor.getX();
@@ -101,7 +102,8 @@ public class WeightCalculator {
             LinkedList<MoveInfo> allPossibleMoves = getAllPossibleMoves(pieces, 0);
 
             for (MoveInfo i : allPossibleMoves) {
-                if(i.getAction() == MoveInfo.Action.ROCHADE_LEFT || i.getAction() == MoveInfo.Action.ROCHADE_RIGHT) continue;
+                if (i.getAction() == MoveInfo.Action.ROCHADE_LEFT || i.getAction() == MoveInfo.Action.ROCHADE_RIGHT)
+                    continue;
 
                 final Figure actor = i.getActor();
                 final int x = actor.getX();
@@ -143,9 +145,9 @@ public class WeightCalculator {
                 sum += getWorth(figs[x][y]);
                 Figure figure = figs[x][y];
 
-                if(figure!= null) {
-                    if(figure.getTeam() == 1) sum+=baseWeights[x][y];
-                    else sum-=baseWeights[x][y];
+                if (figure != null) {
+                    if (figure.getTeam() == 1) sum += baseWeights[x][y];
+                    else sum -= baseWeights[x][y];
                 }
             }
         }
@@ -168,6 +170,21 @@ public class WeightCalculator {
         return result;
     }
 
+    public static Figure[][] copyArray(Figure[][] arrayToCopy) {
+
+        Figure[][] result = new Figure[8][8];
+
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                final Figure figure = arrayToCopy[x][y];
+                if (figure != null)
+                    result[x][y] = figure.copy();
+            }
+        }
+
+        return result;
+    }
+
     public static int getWorth(Figure f) {
 
         if (f == null) return 0;
@@ -182,6 +199,6 @@ public class WeightCalculator {
         if (f instanceof Horse) returnValue = 275;
         if (f.getTeam() == 1)
             return returnValue;
-        return (int) (returnValue * -1);
+        return returnValue * -1;
     }
 }

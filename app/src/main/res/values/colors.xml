@@ -6,4 +6,6 @@
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
     <color name="help">#80000000</color>
+    <color name="colorFrom">#FFFAA7</color>
+    <color name="colorTo">#FFF202</color>
 </resources>

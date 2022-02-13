@@ -39,18 +39,24 @@ import valmx.nelly.chess.figures.Rook;
 import valmx.nelly.chess.managers.DrawableManager;
 
 public class ChessView extends androidx.appcompat.widget.AppCompatImageView implements View.OnTouchListener {
-    private Canvas c = new Canvas();
-    private Paint check0, check1;
-    private Paint withePaint, blackPaint, helpPaint;
+    private final Canvas c = new Canvas();
+    private final Paint check0;
+    private final Paint check1;
+    private final Paint withePaint;
+    private final Paint blackPaint;
+    private final Paint helpPaint;
+    private final Paint toInfoPaint;
+    private final Paint fromInfoPaint;
     private Float dx;
-    private Figure[][] board = new Figure[8][8];
+    private final Figure[][] board = new Figure[8][8];
     public static int ROUND = 1;
     private int playerToMove = 1;
-
-    private DrawableManager drawableManager;
+    private final DrawableManager drawableManager;
+    int counter = 0;
 
     private Figure activeFigure = null;
     private LinkedList<MoveInfo> activeMoveInfo = null;
+    private MoveInfo lastMove;
 
     public ChessView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -60,6 +66,8 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         blackPaint = new Paint();
         withePaint = new Paint();
         helpPaint = new Paint();
+        toInfoPaint = new Paint();
+        fromInfoPaint = new Paint();
 
         drawableManager = new DrawableManager(getResources());
 
@@ -68,6 +76,8 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         check1.setColor(getResources().getColor(R.color.colorPrimaryDark));
         withePaint.setColor(getResources().getColor(R.color.white));
         blackPaint.setColor(getResources().getColor(R.color.black));
+        fromInfoPaint.setColor(getResources().getColor(R.color.colorFrom));
+        toInfoPaint.setColor(getResources().getColor(R.color.colorTo));
         setOnTouchListener(this::onTouch);
 
         post(() -> {
@@ -113,6 +123,8 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
     }
 
+    boolean isKingThreatened;
+
     private void drawCheckerBoard() {
 
         dx = (getWidth() / 8F);
@@ -121,6 +133,21 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
             for (int y = 0; y < 8; y++) {
                 RectF rect = new RectF(x * dx, y * dx, (x + 1) * dx, (y + 1) * dx);
 
+                if (lastMove != null) {
+                    if (y == lastMove.getY()) {
+                        if (x == lastMove.getX()) {
+                            c.drawRect(rect, toInfoPaint);
+                            continue;
+                        }
+                    }
+
+                    if (y == lastMove.getFromY()) {
+                        if (x == lastMove.getFromX()) {
+                            c.drawRect(rect, fromInfoPaint);
+                            continue;
+                        }
+                    }
+                }
                 if (y % 2 == 0) {
                     if (x % 2 == 1) {
                         c.drawRect(rect, check1);
@@ -132,51 +159,10 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
                 }
 
+
             }
         }
         invalidate();
-
-    }
-
-    boolean isKingThreatened;
-
-    private void onTurnChange() {
-        isKingThreatened = false;
-//        playerToMove;
-
-        AtomicReference<Figure> king = new AtomicReference<>();
-
-        HashMap<Figure, MoveInfo> attackers = new HashMap<>();
-
-        final LinkedList<MoveInfo> allPossibleMoves = WeightCalculator.getAllPossibleMoves(board, playerToMove);
-
-        allPossibleMoves.forEach(m -> {
-            if (m.getAction() == MoveInfo.Action.CAPTURE) {
-
-                Figure attackedFig = board[m.getX()][m.getY()];
-
-                if (attackedFig instanceof King && attackedFig.getTeam()
-                        == playerToMove) {
-                    attackers.put(m.getActor(), m);
-                    king.set(attackedFig);
-                }
-
-            }
-        });
-
-        LinkedList<MoveInfo> allowedMovesToSaveKing = new LinkedList<>(king.get().getPossibleMoves(board));
-
-        Figure k = king.get();
-
-        attackers.forEach((a,m) -> {
-            final LinkedList<MoveInfo> possibleMoves = a.getPossibleMoves(board);
-            allowedMovesToSaveKing.add(new MoveInfo(a.getX(),a.getY(),null,null));
-            possibleMoves.forEach(i -> {
-                if (i.getAction() != MoveInfo.Action.CAPTURE) {
-//                    if(i.getX()>)
-                }
-            });
-        });
 
     }
 
@@ -237,18 +223,53 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         return drawable;
     }
 
-    public interface ResultRunnable {
-        public void run(MoveInfo i);
-    }
+    private void onTurnChange() {
+        isKingThreatened = false;
+//        playerToMove;
 
+        AtomicReference<Figure> king = new AtomicReference<>();
+
+        HashMap<Figure, MoveInfo> attackers = new HashMap<>();
+
+        final LinkedList<MoveInfo> allPossibleMoves = WeightCalculator.getAllPossibleMoves(board, playerToMove);
+
+        allPossibleMoves.forEach(m -> {
+            if (m.getAction() == MoveInfo.Action.CAPTURE) {
+
+                Figure attackedFig = board[m.getX()][m.getY()];
+
+                if (attackedFig instanceof King && attackedFig.getTeam()
+                        == playerToMove) {
+                    attackers.put(m.getActor(), m);
+                    king.set(attackedFig);
+                }
+
+            }
+        });
+
+        LinkedList<MoveInfo> allowedMovesToSaveKing = new LinkedList<>(king.get().getPossibleMoves(board));
+
+        Figure k = king.get();
+
+        attackers.forEach((a, m) -> {
+            final LinkedList<MoveInfo> possibleMoves = a.getPossibleMoves(board);
+            allowedMovesToSaveKing.add(new MoveInfo(a.getX(), a.getY(), null, null));
+            possibleMoves.forEach(i -> {
+                if (i.getAction() != MoveInfo.Action.CAPTURE) {
+//                    if(i.getX()>)
+                }
+            });
+        });
+
+    }
 
     private boolean doBotAction() {
 
 
         ResultRunnable r = i -> {
-            doAction(i.getActor(),i);
+            doAction(i.getActor(), i);
             drawRoutine();
-            Toast.makeText(getContext(),i.toString(),Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), i.toString(), Toast.LENGTH_LONG).show();
 
         };
         WeightCalculator.getBestPossibleMove(board, r);
@@ -256,31 +277,6 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
         return true;
     }
-
-    private void drawWeights() {
-
-        int team = ROUND % 2;
-
-        int[][] weights = new int[9][8];
-
-        for (int x = 0; x < board.length; x++) {
-            for (int y = 0; y < board.length; y++) {
-
-                int weight = weights[x][y];
-
-                if (weight == 0) continue;
-                Paint p;
-                if (ROUND % 2 == 0) p = withePaint;
-                else p = blackPaint;
-
-                p.setTextSize(dx / 4);
-
-                c.drawText(weight + "", dx * x, dx * y + dx * .5F, p);
-            }
-        }
-    }
-
-    int counter = 0;
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -322,7 +318,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
                 } else {
 
-                    if (temp.getTeam() == 0 && ROUND%2==0) {
+                    if (temp.getTeam() == 0 && ROUND % 2 == 0) {
                         activeFigure = temp;
                         activeMoveInfo = temp.getPossibleMoves(board);
                     }
@@ -335,14 +331,37 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
                 counter++;
                 break;
             case ACTION_UP:
-                if(counter>8) {
+                if (counter > 8) {
                     event.setAction(ACTION_DOWN);
-                    onTouch(v,event);
+                    onTouch(v, event);
                     return false;
                 }
         }
 
         return true;
+    }
+
+    private void drawWeights() {
+
+        int team = ROUND % 2;
+
+        int[][] weights = new int[9][8];
+
+        for (int x = 0; x < board.length; x++) {
+            for (int y = 0; y < board.length; y++) {
+
+                int weight = weights[x][y];
+
+                if (weight == 0) continue;
+                Paint p;
+                if (ROUND % 2 == 0) p = withePaint;
+                else p = blackPaint;
+
+                p.setTextSize(dx / 4);
+
+                c.drawText(weight + "", dx * x, dx * y + dx * .5F, p);
+            }
+        }
     }
 
     private void doAction(Figure f, MoveInfo i) {
@@ -359,6 +378,9 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
             board[f.getX() - 1][f.getY()].setX(f.getX() - 1);
 
         } else */
+
+        lastMove = i;
+
         if (i.getAction() == MoveInfo.Action.ROCHADE_RIGHT || i.getAction() == MoveInfo.Action.ROCHADE_LEFT) {
 
             int rookX = f.getX() + 1;
@@ -411,6 +433,10 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         playerToMove = ROUND % 2;
     }
 
+    public interface ResultRunnable {
+        void run(MoveInfo i);
+    }
+
     private void drawRoutine() {
         drawCheckerBoard();
         drawFigures();
@@ -424,9 +450,9 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
     LinkedList<AnimationBundle> animationsBundles = new LinkedList<>();
 
     protected class AnimationBundle {
-        private float x;
-        private float y;
-        private Figure f;
+        private final float x;
+        private final float y;
+        private final Figure f;
 
         public AnimationBundle(float x, float y, Figure f) {
             this.x = x;
