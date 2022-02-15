@@ -3,7 +3,7 @@ package valmx.nelly.chess.figures;
 import java.util.LinkedList;
 
 public class Bishop extends Figure {
-    public Bishop(int team, int x, int y) {
+    public Bishop(boolean team, int x, int y) {
         super(team, x, y);
     }
 

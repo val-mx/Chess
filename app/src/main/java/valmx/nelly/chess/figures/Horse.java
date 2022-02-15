@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 public class
 Horse extends Figure {
-    public Horse(int team, int x, int y) {
+    public Horse(boolean team, int x, int y) {
         super(team, x, y);
     }
 

@@ -3,10 +3,10 @@ package valmx.nelly.chess.figures;
 import java.util.LinkedList;
 
 public abstract class Figure {
-    protected int team;
+    protected boolean team;
     protected int x;
     protected int y;
-    protected int lastMove = -1;
+    protected int lastMove = -1; //TODO FIX ROCHADE
     public boolean drawMe = true;
 
     public void setLastMove(int lastMove) {
@@ -17,7 +17,7 @@ public abstract class Figure {
         return lastMove;
     }
 
-    public Figure(int team, int x, int y) {
+    public Figure(boolean team, int x, int y) {
         this.team = team;
         this.x = x;
         this.y = y;
@@ -31,11 +31,11 @@ public abstract class Figure {
         return x;
     }
 
-    public int getTeam() {
+    public boolean getPlayer() {
         return team;
     }
 
-    public void setTeam(int team) {
+    public void setTeam(boolean team) {
         this.team = team;
     }
 

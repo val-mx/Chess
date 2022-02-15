@@ -3,7 +3,7 @@ package valmx.nelly.chess.figures;
 import java.util.LinkedList;
 
 public class Queen extends Figure {
-    public Queen(int team, int x, int y) {
+    public Queen(boolean team, int x, int y) {
         super(team, x, y);
     }
 

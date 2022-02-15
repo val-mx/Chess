@@ -55,7 +55,7 @@ public class MoveInfo {
     public void setActor(Figure actor) {
         this.actor = actor;
         fromX = actor.getX();
-        fromX = actor.getY();
+        fromY = actor.getY();
     }
 
     public int getY() {
