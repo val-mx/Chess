@@ -234,6 +234,10 @@ public class WeightCalculator {
         int x = f.getX();
         int y = f.getY();
 
+        if(f.getPlayer()) {
+            y = 7-y;
+        }
+
             if(f instanceof Rook) {
                 returnValue = rookValues[x][y];
             } else if(f instanceof Pawn) {
