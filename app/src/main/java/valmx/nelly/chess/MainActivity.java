@@ -25,12 +25,12 @@ public class MainActivity extends AppCompatActivity implements ChessView.ChessLi
     @Override
     public void onNewRound(ChessBoard board) {
 
-        if (board.getPlayer()) {
+        if (!board.getPlayer()) {
             infoText.setText("White to move...");
         } else
             infoText.setText("Black thinking...");
 
-        if (board.isKingInCheck() && board.getPlayer()) {
+        if (board.isKingInCheck() && !board.getPlayer()) {
             if (board.getPlayer())
                 infoText.setText("White In Check...");
             else

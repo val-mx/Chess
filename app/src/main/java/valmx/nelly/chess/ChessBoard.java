@@ -16,6 +16,7 @@ public class ChessBoard {
     class LastActionInfo {
         private final Figure replacedFig;
         private final MoveInfo i;
+        private boolean isRochade = false;
 
         public LastActionInfo(Figure replacedFig, MoveInfo i) {
 
@@ -137,7 +138,7 @@ public class ChessBoard {
             for (int j = 0; j < 8; j++) {
 
                 Figure f = board[i][j];
-                if(f!= null && f.getPlayer() ==player)
+                if (f != null && f.getPlayer() == player)
                     allPossibleMovesPlayer.addAll(f.getPossibleMoves(board));
             }
         }
@@ -147,6 +148,7 @@ public class ChessBoard {
     public void doAction(MoveInfo i) {
         doAction(i, board);
     }
+
     public void incrementRound() {
         round++;
     }
@@ -167,32 +169,37 @@ public class ChessBoard {
                 setFigure(i.getX(), i.getY(), actor1);
                 setFigure(actor1.getX(), actor1.getY(), null);
                 final Figure captor1 = getFigure(i.getX(), testY);
-                lastActionStack.add( new LastActionInfo(captor1, i));
+                lastActionStack.add(new LastActionInfo(captor1, i));
                 setFigure(i.getX(), testY, null);
 
                 break;
-            case ROCHADE_LEFT: case ROCHADE_RIGHT:
+            case ROCHADE_LEFT:
+            case ROCHADE_RIGHT:
                 final Figure actor2 = i.getActor();
 
 
-                if(i.getAction() == MoveInfo.Action.ROCHADE_LEFT) {
+                if (i.getAction() == MoveInfo.Action.ROCHADE_LEFT) {
 
-                    Figure rook = getFigure(0,actor2.getY());
+                    Figure rook = getFigure(0, actor2.getY());
 
-                    setFigure(rook.getX(),rook.getY(),null);
-                    setFigure(2,rook.getY(),rook);
+                    setFigure(rook.getX(), rook.getY(), null);
+                    setFigure(2, rook.getY(), rook);
 
-                    setFigure(actor2.getX(),actor2.getY(),null);
-                    setFigure(1,actor2.getY(),actor2);
+                    setFigure(actor2.getX(), actor2.getY(), null);
+                    setFigure(1, actor2.getY(), actor2);
                 } else {
-                    Figure rook = getFigure(7,actor2.getY());
+                    Figure rook = getFigure(7, actor2.getY());
 
-                    setFigure(rook.getX(),rook.getY(),null);
-                    setFigure(4,rook.getY(),rook);
+                    setFigure(rook.getX(), rook.getY(), null);
+                    setFigure(4, rook.getY(), rook);
 
-                    setFigure(actor2.getX(),actor2.getY(),null);
-                    setFigure(5,actor2.getY(),actor2);
+                    setFigure(actor2.getX(), actor2.getY(), null);
+                    setFigure(5, actor2.getY(), actor2);
                 }
+                final LastActionInfo lastActionInfo = new LastActionInfo(actor2, i);
+                lastActionInfo.isRochade = true;
+                lastActionStack.add(lastActionInfo);
+                break;
 
             case MOVE:
             case CAPTURE:
@@ -217,6 +224,29 @@ public class ChessBoard {
     public void undoLastAction() {
         if (!lastActionStack.empty()) {
             LastActionInfo lastAction = lastActionStack.pop();
+
+
+            if (lastAction.isRochade) {
+
+                final Figure actor = lastAction.i.getActor();
+
+                final int x = actor.getX();
+                final int y = actor.getY();
+
+                if(x>3) {
+                    final Figure rook = getFigure(4, y);
+                    setFigure(rook.getX(),rook.getY(),null);
+                    setFigure(7,y,rook);
+                } else {
+                    final Figure rook = getFigure(2, y);
+                    setFigure(rook.getX(),rook.getY(),null);
+
+                    setFigure(0,y,rook);
+                }
+                setFigure(x,y,null);
+                setFigure(3, actor.getY(), actor);
+                return;
+            }
 
 
             final int y1 = lastAction.getI().getY();

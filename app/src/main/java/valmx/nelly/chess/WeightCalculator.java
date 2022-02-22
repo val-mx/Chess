@@ -26,6 +26,63 @@ public class WeightCalculator {
             {0, 0, 0, 0, 0, 0, 0, 0}
     };
 
+    // https://web.archive.org/web/20180115224109/https://chessprogramming.wikispaces.com/Simplified+evaluation+function
+
+    private static int[][] bishopValues = {
+            {-20, -10, -10, -10, -10, -10, -10, -20},
+            {-10, 0, 0, 0, 0, 0, 0, -10},
+            {-10, 0, 5, 10, 10, 5, 0, -10},
+            {-10, 5, 5, 10, 10, 5, 5, -10},
+            {-10, 0, 10, 10, 10, 10, 0, -10},
+            {-10, 10, 10, 10, 10, 10, 10, -10},
+            {-10, 5, 0, 0, 0, 0, 5, -10},
+            {-20, -10, -10, -10, -10, -10, -10, -20}
+    };
+
+    private static int[][] pawnValues = {
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {50, 50, 50, 50, 50, 50, 50, 50},
+            {10, 10, 20, 30, 30, 20, 10, 10},
+            {5, 5, 10, 25, 25, 10, 5, 5},
+            {0, 0, 0, 20, 20, 0, 0, 0},
+            {5, -5, -10, 0, 0, -10, -5, 5},
+            {5, 10, 10, -20, -20, 10, 10, 5},
+            {0, 0, 0, 0, 0, 0, 0, 0}
+    };
+
+    private static int[][] knightValues = {
+            {-50, -40, -30, -30, -30, -30, -40, -50},
+            {-40, -20, 0, 0, 0, 0, -20, -40},
+            {-30, 0, 10, 15, 15, 10, 0, -30},
+            {-30, 5, 15, 20, 20, 15, 5, -30},
+            {-30, 0, 15, 20, 20, 15, 0, -30},
+            {-30, 5, 10, 15, 15, 10, 5, -30},
+            {-40, -20, 0, 5, 5, 0, -20, -40},
+            {-50, -40, -30, -30, -30, -30, -40, -50}
+    };
+
+    private static int[][] rookValues = {
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {5, 10, 10, 10, 10, 10, 10, 5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {-5, 0, 0, 0, 0, 0, 0, -5},
+            {0, 0, 0, 5, 5, 0, 0, 0}
+    };
+
+    private static int[][] queenValues = {
+                    {-20, -10, -10, -5, -5, -10, -10, -20},
+                    {-10, 0, 0, 0, 0, 0, 0, -10},
+                    {-10, 0, 5, 5, 5, 5, 0, -10},
+                    {-5, 0, 5, 5, 5, 5, 0, -5},
+                    {0, 0, 5, 5, 5, 5, 0, -5},
+                    {-10, 5, 5, 5, 5, 5, 0, -10},
+                    {-10, 0, 5, 0, 0, 0, 0, -10},
+                    {-20, -10, -10, -5, -5, -10, -10, -20}
+            };
+
 
     public static MoveInfo getBestPossibleMove(Figure[][] pieces, ChessView.ResultRunnable r) {
 
@@ -60,12 +117,9 @@ public class WeightCalculator {
 
             int maxEval = -Integer.MAX_VALUE;
             MoveInfo bestMove = null;
-            LinkedList<MoveInfo> allPossibleMoves = getAllPossibleMoves(board, true);
+            LinkedList<MoveInfo> allPossibleMoves = sortList(getAllPossibleMoves(board, true));
 
             for (MoveInfo i : allPossibleMoves) {
-
-                if (i.getAction() == MoveInfo.Action.ROCHADE_LEFT || i.getAction() == MoveInfo.Action.ROCHADE_RIGHT)
-                    continue;
 
                 board.doAction(i);
 
@@ -85,11 +139,9 @@ public class WeightCalculator {
         } else {
             int minEval = Integer.MAX_VALUE;
             MoveInfo bestMove = null;
-            LinkedList<MoveInfo> allPossibleMoves = getAllPossibleMoves(board, false);
+            LinkedList<MoveInfo> allPossibleMoves = sortList(getAllPossibleMoves(board, false));
 
             for (MoveInfo i : allPossibleMoves) {
-                if (i.getAction() == MoveInfo.Action.ROCHADE_LEFT || i.getAction() == MoveInfo.Action.ROCHADE_RIGHT)
-                    continue;
 
                 board.doAction(i);
                 i.setWorth(minMax(board, depth - 1, alpha, beta, true).getWorth());
@@ -109,17 +161,32 @@ public class WeightCalculator {
         }
     }
 
+
+    private static LinkedList<MoveInfo> sortList(LinkedList<MoveInfo> info) {
+
+        LinkedList<MoveInfo> result = new LinkedList<>();
+
+        for (MoveInfo i : info) {
+
+            if (i.getAction() == MoveInfo.Action.CAPTURE) {
+                result.addFirst(i);
+            } else
+                result.addLast(i);
+
+        }
+
+        return result;
+
+    }
+
     public static int getWortSum(Figure[][] figs) {
         int sum = 0;
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
                 sum += getWorth(figs[x][y]);
                 Figure figure = figs[x][y];
-
-                if (figure != null) {
-                    if (figure.getPlayer()) sum += baseWeights[x][y];
-                    else sum -= baseWeights[x][y];
-                }
+                if(figure != null)
+                sum+= getPosWorth(figure);
             }
         }
         return sum;
@@ -157,6 +224,28 @@ public class WeightCalculator {
         if (f instanceof King) returnValue = (int) Math.pow(10, 5);
         if (f instanceof Bishop) returnValue = 325;
         if (f instanceof Horse) returnValue = 275;
+        if (f.getPlayer())
+            return returnValue;
+        return returnValue * -1;
+    }
+
+    public static int getPosWorth(Figure f) {
+        int returnValue = 0;
+        int x = f.getX();
+        int y = f.getY();
+
+            if(f instanceof Rook) {
+                returnValue = rookValues[x][y];
+            } else if(f instanceof Pawn) {
+                returnValue = pawnValues[x][y];
+            } else if(f instanceof Horse) {
+                returnValue = knightValues[x][y];
+            } else if(f instanceof Bishop) {
+                returnValue = bishopValues[x][y];
+            }if(f instanceof Queen) {
+                returnValue = queenValues[x][y];
+            }
+
         if (f.getPlayer())
             return returnValue;
         return returnValue * -1;

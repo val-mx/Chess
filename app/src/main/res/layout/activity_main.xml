@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="#303030"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
@@ -16,7 +17,7 @@
 
     <TextView
         android:id="@+id/info"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

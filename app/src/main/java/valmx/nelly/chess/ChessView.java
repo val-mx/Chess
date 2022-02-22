@@ -44,6 +44,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
     private final Paint helpPaint;
     private final Paint toInfoPaint;
     private final Paint fromInfoPaint;
+    private final Paint textPaint;
     private final DrawableManager drawableManager;
     int counter = 0;
     boolean isKingThreatened;
@@ -68,6 +69,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         helpPaint = new Paint();
         toInfoPaint = new Paint();
         fromInfoPaint = new Paint();
+        textPaint = new Paint();
 
         drawableManager = new DrawableManager(getResources());
 
@@ -78,6 +80,8 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         blackPaint.setColor(getResources().getColor(R.color.black));
         fromInfoPaint.setColor(getResources().getColor(R.color.colorFrom));
         toInfoPaint.setColor(getResources().getColor(R.color.colorTo));
+        textPaint.setColor(getResources().getColor(R.color.white));
+
         setOnTouchListener(this::onTouch);
 
         post(() -> {
@@ -157,8 +161,6 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
                 if (!f.drawMe) continue;
 
-                Paint p;
-
                 Drawable drawable = getDrawableForActor(f);
 
 
@@ -172,7 +174,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
     public Drawable getDrawableForActor(Figure f) {
         Drawable drawable = null;
-        if (f.getPlayer()) {
+        if (!f.getPlayer()) {
             if (f instanceof Rook) {
                 drawable = drawableManager.BLACK_ROOK;
             } else if (f instanceof Pawn) {
@@ -288,13 +290,13 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         Figure[][] board = chessBoard.getBoard();
 
         if (i.getAction() == MoveInfo.Action.ROCHADE_RIGHT || i.getAction() == MoveInfo.Action.ROCHADE_LEFT) {
-            int rookX = f.getX() + 1;
+            int rookX = 7;
             if (i.getAction() == MoveInfo.Action.ROCHADE_LEFT) {
-                rookX = f.getX() - 1;
+                rookX = 0;
             }
 
             Rook rook = (Rook) board[rookX][f.getY()];
-            animateMove(new MoveInfo(rookX, f.getY(), MoveInfo.Action.MOVE, rook));
+//            animateMove(new MoveInfo(rookX, f.getY(), MoveInfo.Action.MOVE, rook));
             animateMove(i);
         }
         animateMove(i);
@@ -309,6 +311,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
     private void drawRoutine() {
         drawCheckerBoard();
+        drawCoordinateHelpers();
         drawFigures();
         drawPossibleMoves(activeMoveInfo);
         invalidate();
@@ -395,10 +398,34 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
                     if (i.getAction() != MoveInfo.Action.POSSIBLEPAWNCAPTURE) {
                         int x = i.getX();
                         int y = i.getY();
-                        c.drawCircle((x + .5F) * dx, (y + .5F) * dx, dx * .15F, helpPaint);
+                        c.drawCircle((x + .5F) * dx, (y + .5F) * dx, dx * .2F, helpPaint);
                     }
                 }
         );
+    }
+
+    private void drawCoordinateHelpers() {
+        for (int i = 8; i > 0; i--) {
+
+            float y = (dx * (i - 1)) - dx / 12F;
+            textPaint.setTextSize(dx / 6F);
+            Paint.FontMetrics fm = textPaint.getFontMetrics();
+            float height = fm.descent - fm.ascent;
+            c.drawText("" + (i), 0, y + height, textPaint);
+
+        }
+
+        for (int i = 8; i > 0; i--) {
+
+            float x = (dx * (i)) - dx / 12F;
+            textPaint.setTextSize(dx / 6F);
+            Paint.FontMetrics fm = textPaint.getFontMetrics();
+            float height = fm.descent - fm.ascent;
+            c.drawText("" + (char) ('a'-1 +i), x - height, 8*dx, textPaint);
+
+        }
+
+
     }
 
     interface ChessListener {
