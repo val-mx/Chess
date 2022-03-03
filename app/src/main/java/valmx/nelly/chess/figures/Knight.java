@@ -3,8 +3,8 @@ package valmx.nelly.chess.figures;
 import java.util.LinkedList;
 
 public class
-Horse extends Figure {
-    public Horse(boolean team, int x, int y) {
+Knight extends Figure {
+    public Knight(boolean team, int x, int y) {
         super(team, x, y);
     }
 
@@ -28,7 +28,7 @@ Horse extends Figure {
 
     @Override
     public Figure copy() {
-        return new Horse(team,x,y);
+        return new Knight(team,x,y);
     }
 
 

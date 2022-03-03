@@ -8,7 +8,7 @@ public class MoveInfo {
     private final int y;
     private int fromX = 0;
     private int fromY = 0;
-    private final Action action;
+    private Action action = Action.MOVE;
     private Figure actor;
     public int chachedWoth = 0;
     int worth = 0;
@@ -22,6 +22,11 @@ public class MoveInfo {
             fromX = actor.getX();
             fromY = actor.getY();
         }
+    }
+
+    public MoveInfo() {
+        x = 0;
+        y = 0;
     }
 
     public void invertWorth() {

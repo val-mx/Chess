@@ -61,58 +61,56 @@ public class Pawn extends Figure {
                     info.add(new MoveInfo(x - 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE, this));*/
 
             }
-            if (testY != 0 && testY != 7) {
 
-                if (x != 7) {
-                    Figure possibleCaptureRight = field[x + 1][testY];
+            if (x != 7) {
+                Figure possibleCaptureRight = field[x + 1][testY];
 
-                    if (possibleCaptureRight != null && possibleCaptureRight.team != team) {
-                        info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.CAPTURE, this));
-                    } /*else
-                        info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE, this));*/
+                if (possibleCaptureRight != null && possibleCaptureRight.team != team) {
+                    info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.CAPTURE, this));
+                } /*else
+                    info.add(new MoveInfo(x + 1, testY, MoveInfo.Action.POSSIBLEPAWNCAPTURE, this));*/
 
-                }
+            }
 
 
-                if (x != 0) {
-                    Figure possibleEnPassantLeft = field[x - 1][y];
+            if (x != 0) {
+                Figure possibleEnPassantLeft = field[x - 1][y];
 
-                    if (possibleEnPassantLeft != null && possibleEnPassantLeft.getPlayer() != team) {
-                        if (possibleEnPassantLeft instanceof Pawn) {
-                            if (((Pawn) possibleEnPassantLeft).lastDoubleMove == ROUND - 1) {
-                                int captureY;
-                                if (!team) {
-                                    captureY = y - 1;
-                                } else {
-                                    captureY = y + 1;
-                                }
-                                info.add(new MoveInfo(x - 1, captureY, MoveInfo.Action.ENPASSANT, this));
+                if (possibleEnPassantLeft != null && possibleEnPassantLeft.getPlayer() != team) {
+                    if (possibleEnPassantLeft instanceof Pawn) {
+                        if (((Pawn) possibleEnPassantLeft).lastDoubleMove == ROUND - 1) {
+                            int captureY;
+                            if (!team) {
+                                captureY = y - 1;
+                            } else {
+                                captureY = y + 1;
                             }
+                            info.add(new MoveInfo(x - 1, captureY, MoveInfo.Action.ENPASSANT, this));
                         }
                     }
-
-                }
-
-                if (x != 7) {
-                    Figure possibleEnPassantLeft = field[x + 1][y];
-
-                    if (possibleEnPassantLeft != null && possibleEnPassantLeft.getPlayer() != team) {
-                        if (possibleEnPassantLeft instanceof Pawn) {
-                            if (((Pawn) possibleEnPassantLeft).lastDoubleMove == ROUND - 1) {
-                                int captureY;
-                                if (!team) {
-                                    captureY = y - 1;
-                                } else {
-                                    captureY = y + 1;
-                                }
-                                info.add(new MoveInfo(x + 1, captureY, MoveInfo.Action.ENPASSANT, this));
-                            }
-                        }
-                    }
-
                 }
 
             }
+
+            if (x != 7) {
+                Figure possibleEnPassantLeft = field[x + 1][y];
+
+                if (possibleEnPassantLeft != null && possibleEnPassantLeft.getPlayer() != team) {
+                    if (possibleEnPassantLeft instanceof Pawn) {
+                        if (((Pawn) possibleEnPassantLeft).lastDoubleMove == ROUND - 1) {
+                            int captureY;
+                            if (!team) {
+                                captureY = y - 1;
+                            } else {
+                                captureY = y + 1;
+                            }
+                            info.add(new MoveInfo(x + 1, captureY, MoveInfo.Action.ENPASSANT, this));
+                        }
+                    }
+                }
+
+            }
+
         }
         return info;
     }

@@ -6,7 +6,7 @@ import java.util.LinkedList;
 
 import valmx.nelly.chess.figures.Bishop;
 import valmx.nelly.chess.figures.Figure;
-import valmx.nelly.chess.figures.Horse;
+import valmx.nelly.chess.figures.Knight;
 import valmx.nelly.chess.figures.King;
 import valmx.nelly.chess.figures.MoveInfo;
 import valmx.nelly.chess.figures.Pawn;
@@ -90,7 +90,8 @@ public class WeightCalculator {
             @Override
             protected MoveInfo doInBackground(Void... voids) {
 //                return minMax(pieces, 5, true);
-                return minMax(new ChessBoard(copyArray(pieces)), 5, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
+
+                return new MiniMax().min(new ChessBoard(copyArray(pieces)),4);
             }
 
             @Override
@@ -223,7 +224,7 @@ public class WeightCalculator {
         if (f instanceof Rook) returnValue = 500;
         if (f instanceof King) returnValue = (int) Math.pow(10, 5);
         if (f instanceof Bishop) returnValue = 325;
-        if (f instanceof Horse) returnValue = 275;
+        if (f instanceof Knight) returnValue = 275;
         if (f.getPlayer())
             return returnValue;
         return returnValue * -1;
@@ -242,7 +243,7 @@ public class WeightCalculator {
                 returnValue = rookValues[x][y];
             } else if(f instanceof Pawn) {
                 returnValue = pawnValues[x][y];
-            } else if(f instanceof Horse) {
+            } else if(f instanceof Knight) {
                 returnValue = knightValues[x][y];
             } else if(f instanceof Bishop) {
                 returnValue = bishopValues[x][y];

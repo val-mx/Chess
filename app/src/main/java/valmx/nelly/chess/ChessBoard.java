@@ -5,7 +5,7 @@ import java.util.Stack;
 
 import valmx.nelly.chess.figures.Bishop;
 import valmx.nelly.chess.figures.Figure;
-import valmx.nelly.chess.figures.Horse;
+import valmx.nelly.chess.figures.Knight;
 import valmx.nelly.chess.figures.King;
 import valmx.nelly.chess.figures.MoveInfo;
 import valmx.nelly.chess.figures.Pawn;
@@ -41,6 +41,7 @@ public class ChessBoard {
     private boolean player;
 
     private int round = 0;
+    private int roundCounter = 0;
 
     public boolean getPlayer() {
         return player;
@@ -56,6 +57,10 @@ public class ChessBoard {
 
     public ChessBoard() {
         initGame();
+    }
+
+    public int getRound() {
+        return round;
     }
 
     public ChessBoard(Figure[][] board) {
@@ -75,8 +80,8 @@ public class ChessBoard {
         board[7][0] = new Rook(true, 7, 0);
         board[4][0] = new Queen(true, 4, 0);
         board[3][0] = new King(true, 3, 0);
-        board[1][0] = new Horse(true, 1, 0);
-        board[6][0] = new Horse(true, 6, 0);
+        board[1][0] = new Knight(true, 1, 0);
+        board[6][0] = new Knight(true, 6, 0);
 
         board[0][7] = new Rook(false, 0, 07);
         board[2][7] = new Bishop(false, 2, 07);
@@ -84,8 +89,8 @@ public class ChessBoard {
         board[7][7] = new Rook(false, 7, 7);
         board[4][7] = new Queen(false, 4, 07);
         board[3][7] = new King(false, 3, 7);
-        board[1][7] = new Horse(false, 1, 07);
-        board[6][7] = new Horse(false, 6, 07);
+        board[1][7] = new Knight(false, 1, 07);
+        board[6][7] = new Knight(false, 6, 07);
     }
 
 
@@ -146,6 +151,8 @@ public class ChessBoard {
     }
 
     public void doAction(MoveInfo i) {
+        roundCounter++;
+        round = roundCounter/2;
         doAction(i, board);
     }
 
@@ -155,7 +162,7 @@ public class ChessBoard {
 
     public void doAction(MoveInfo i, Figure[][] board) {
 
-//        i.getActor().setLastMove(round);
+        i.getActor().setLastMove(round);
 
         switch (i.getAction()) {
             case ENPASSANT:
@@ -216,9 +223,6 @@ public class ChessBoard {
 
         }
 
-        round++;
-
-
     }
 
     public void undoLastAction() {
@@ -233,17 +237,17 @@ public class ChessBoard {
                 final int x = actor.getX();
                 final int y = actor.getY();
 
-                if(x>3) {
+                if (x > 3) {
                     final Figure rook = getFigure(4, y);
-                    setFigure(rook.getX(),rook.getY(),null);
-                    setFigure(7,y,rook);
+                    setFigure(rook.getX(), rook.getY(), null);
+                    setFigure(7, y, rook);
                 } else {
                     final Figure rook = getFigure(2, y);
-                    setFigure(rook.getX(),rook.getY(),null);
+                    setFigure(rook.getX(), rook.getY(), null);
 
-                    setFigure(0,y,rook);
+                    setFigure(0, y, rook);
                 }
-                setFigure(x,y,null);
+                setFigure(x, y, null);
                 setFigure(3, actor.getY(), actor);
                 return;
             }
@@ -260,7 +264,9 @@ public class ChessBoard {
             actor.setX(x);
             actor.setY(y);
 //            actor.setLastMove(--round);
-
+            roundCounter--;
+            round = roundCounter/2;
+            actor.setLastMove(round);
         }
     }
 

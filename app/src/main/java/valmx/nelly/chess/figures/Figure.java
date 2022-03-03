@@ -6,10 +6,18 @@ public abstract class Figure {
     protected boolean team;
     protected int x;
     protected int y;
-    protected int lastMove = -1; //TODO FIX ROCHADE
+    protected int lastMove = -1;
+    protected int lastMoveCache = -1;
     public boolean drawMe = true;
 
     public void setLastMove(int lastMove) {
+
+        if(lastMove<=this.lastMove) {
+            this.lastMove = lastMoveCache;
+            return;
+        }
+
+        lastMoveCache = this.lastMove;
         this.lastMove = lastMove;
     }
 

@@ -17,7 +17,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,7 +25,7 @@ import java.util.LinkedList;
 
 import valmx.nelly.chess.figures.Bishop;
 import valmx.nelly.chess.figures.Figure;
-import valmx.nelly.chess.figures.Horse;
+import valmx.nelly.chess.figures.Knight;
 import valmx.nelly.chess.figures.King;
 import valmx.nelly.chess.figures.MoveInfo;
 import valmx.nelly.chess.figures.Pawn;
@@ -186,7 +185,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
                 drawable = drawableManager.BLACK_QUEEN;
             } else if (f instanceof King) {
                 drawable = drawableManager.BLACK_KING;
-            } else if (f instanceof Horse) {
+            } else if (f instanceof Knight) {
                 drawable = drawableManager.BLACK_KNIGHT;
             }
 
@@ -201,7 +200,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
             drawable = drawableManager.WHITE_QUEEN;
         } else if (f instanceof King) {
             drawable = drawableManager.WHITE_KING;
-        } else if (f instanceof Horse) {
+        } else if (f instanceof Knight) {
             drawable = drawableManager.WHITE_KNIGHT;
         }
         return drawable;
@@ -296,8 +295,9 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
             }
 
             Rook rook = (Rook) board[rookX][f.getY()];
-//            animateMove(new MoveInfo(rookX, f.getY(), MoveInfo.Action.MOVE, rook));
-            animateMove(i);
+            if (rookX == 0)
+                animateMove(new MoveInfo(2, f.getY(), MoveInfo.Action.MOVE, rook));
+            else animateMove(new MoveInfo(5, f.getY(), MoveInfo.Action.MOVE, rook));
         }
         animateMove(i);
         chessBoard.doAction(i);
@@ -411,7 +411,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
             textPaint.setTextSize(dx / 6F);
             Paint.FontMetrics fm = textPaint.getFontMetrics();
             float height = fm.descent - fm.ascent;
-            c.drawText("" + (i), 0, y + height, textPaint);
+            c.drawText("" + (9-i), 0, y + height, textPaint);
 
         }
 
@@ -421,7 +421,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
             textPaint.setTextSize(dx / 6F);
             Paint.FontMetrics fm = textPaint.getFontMetrics();
             float height = fm.descent - fm.ascent;
-            c.drawText("" + (char) ('a'-1 +i), x - height, 8*dx, textPaint);
+            c.drawText("" + (char) ('a' - 1 + i), x - height, 8 * dx, textPaint);
 
         }
 
