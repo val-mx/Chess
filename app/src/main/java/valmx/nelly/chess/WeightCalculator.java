@@ -186,8 +186,8 @@ public class WeightCalculator {
             for (int y = 0; y < 8; y++) {
                 sum += getWorth(figs[x][y]);
                 Figure figure = figs[x][y];
-                if(figure != null)
-                sum+= getPosWorth(figure);
+//                if(figure != null)
+//                sum+= getPosWorth(figure);
             }
         }
         return sum;
@@ -219,12 +219,12 @@ public class WeightCalculator {
 
         int returnValue = 0;
 
-        if (f instanceof Pawn) returnValue = 100;
-        if (f instanceof Queen) returnValue = 800;
-        if (f instanceof Rook) returnValue = 500;
+        if (f instanceof Pawn) returnValue = 10;
+        if (f instanceof Queen) returnValue = 85;
+        if (f instanceof Rook) returnValue = 50;
         if (f instanceof King) returnValue = (int) Math.pow(10, 5);
-        if (f instanceof Bishop) returnValue = 325;
-        if (f instanceof Knight) returnValue = 275;
+        if (f instanceof Bishop) returnValue = 30;
+        if (f instanceof Knight) returnValue = 30;
         if (f.getPlayer())
             return returnValue;
         return returnValue * -1;

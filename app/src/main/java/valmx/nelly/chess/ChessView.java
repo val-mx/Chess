@@ -301,7 +301,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         }
         animateMove(i);
         chessBoard.doAction(i);
-
+        lastMove = i;
         f.setLastMove(ROUND);
 
         chessBoard.changePlayer();

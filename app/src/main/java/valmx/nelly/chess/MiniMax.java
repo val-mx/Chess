@@ -2,9 +2,12 @@ package valmx.nelly.chess;
 
 import java.util.LinkedList;
 
+import valmx.nelly.chess.figures.Bishop;
 import valmx.nelly.chess.figures.Figure;
 import valmx.nelly.chess.figures.King;
+import valmx.nelly.chess.figures.Knight;
 import valmx.nelly.chess.figures.MoveInfo;
+import valmx.nelly.chess.figures.Pawn;
 
 public class MiniMax {
 
@@ -30,7 +33,7 @@ public class MiniMax {
 
             b.doAction(i);
 
-            i.setWorth(max(b, depth - 1).getWorth() + getMoveExtraWorth(i,b));
+            i.setWorth(max(b, depth - 1).getWorth() + getMoveExtraWorth(i, b));
 
             b.undoLastAction();
 
@@ -65,7 +68,7 @@ public class MiniMax {
 
             b.doAction(i);
 
-            i.setWorth(min(b, depth - 1).getWorth() + getMoveExtraWorth(i,b) * -1);
+            i.setWorth(min(b, depth - 1).getWorth() + getMoveExtraWorth(i, b) * -1);
 
             b.undoLastAction();
 
@@ -79,18 +82,31 @@ public class MiniMax {
     }
 
     private int getMoveExtraWorth(MoveInfo i, ChessBoard board) {
-        if (i.getAction().toString().contains("ROCHADE")) return 200;
-        if (i.getAction() == MoveInfo.Action.ENPASSANT) return 10000;
-        if (i.getAction() == MoveInfo.Action.CAPTURE) return 20;
+
 
         final Figure actor = i.getActor();
+        int sum = 0;
 
-        if (actor instanceof King && actor.getLastMove() == -1) return -90;
-        if (actor.getLastMove() == board.getRound()) return -70;
+        if (i.getAction().toString().contains("ROCHADE")) sum += 5;
+        else if (actor instanceof King/* && actor.getLastMove() == -1*/) sum += -90;
 
-        if(actor.getLastMove() == -1 && board.getRound() > 10) return 90;
 
-        return 0;
+        if ((actor instanceof Pawn && actor.getX() == 3) && i.getY() == 3) {
+            if (board.getRound() == 0) sum += 1000;
+        }
+
+        if (i.getY() == 3 && i.getX() == 3) sum += 5;
+        if (i.getY() == 3 && i.getX() == 4) sum += 5;
+        if (i.getY() == 4 && i.getX() == 3) sum += 5;
+        if (i.getY() == 4 && i.getX() == 4) sum += 5;
+
+
+        if (actor.getLastMove() == board.getRound()) sum += -5;
+
+        if (actor instanceof Knight || actor instanceof Bishop)
+            if (actor.getLastMove() == -1 && board.getRound() < 10) sum += 5;
+
+        return sum;
     }
 
 }

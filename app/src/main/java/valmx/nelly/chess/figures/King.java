@@ -93,7 +93,6 @@ public class King extends Figure {
                 }
             }
 
-
         return info;
     }
 
