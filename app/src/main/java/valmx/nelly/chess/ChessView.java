@@ -97,7 +97,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
             drawCheckerBoard();
             drawFigures();
-            doBotAction();
+            doBotAction(false);
             invalidate();
 
         });
@@ -206,16 +206,17 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         return drawable;
     }
 
-    private boolean doBotAction() {
+    private boolean doBotAction(boolean player) {
 
 
         ResultRunnable r = i -> {
             doAction(i.getActor(), i);
             drawRoutine();
+            doBotAction(!player);
 
 
         };
-        WeightCalculator.getBestPossibleMove(chessBoard.getBoard(), r);
+        WeightCalculator.getBestPossibleMove(chessBoard.getBoard(), r, player);
 
 
         return true;
@@ -244,7 +245,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
                             doAction(activeFigure, i);
                             activeFigure = null;
                             activeMoveInfo = null;
-                            doBotAction();
+                            doBotAction(false);
                             if (!isAnimationActive)
 
                                 drawRoutine();
@@ -411,7 +412,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
             textPaint.setTextSize(dx / 6F);
             Paint.FontMetrics fm = textPaint.getFontMetrics();
             float height = fm.descent - fm.ascent;
-            c.drawText("" + (9-i), 0, y + height, textPaint);
+            c.drawText("" + (9 - i), 0, y + height, textPaint);
 
         }
 

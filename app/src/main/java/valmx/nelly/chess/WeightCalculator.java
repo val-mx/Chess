@@ -84,14 +84,16 @@ public class WeightCalculator {
             };
 
 
-    public static MoveInfo getBestPossibleMove(Figure[][] pieces, ChessView.ResultRunnable r) {
+    public static MoveInfo getBestPossibleMove(Figure[][] pieces, ChessView.ResultRunnable r, boolean player) {
 
         AsyncTask<Void, Void, MoveInfo> task = new AsyncTask<Void, Void, MoveInfo>() {
             @Override
             protected MoveInfo doInBackground(Void... voids) {
 //                return minMax(pieces, 5, true);
-
+                if(player)
                 return new MiniMax().min(new ChessBoard(copyArray(pieces)),4);
+                else
+                    return new MiniMax().max(new ChessBoard(copyArray(pieces)),4);
             }
 
             @Override
@@ -194,8 +196,15 @@ public class WeightCalculator {
     }
 
     public static LinkedList<MoveInfo> getAllPossibleMoves(ChessBoard board, boolean team) {
+
+        boolean lastPlayer = board.getPlayer();
         board.setPlayer(team);
-        return board.getLegalCheckMoves();
+
+        final LinkedList<MoveInfo> legalCheckMoves = board.getAllPossibleMoves();
+
+        board.setPlayer(lastPlayer);
+
+        return legalCheckMoves;
     }
 
     public static Figure[][] copyArray(Figure[][] arrayToCopy) {

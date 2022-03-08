@@ -88,7 +88,7 @@ public class MiniMax {
         int sum = 0;
 
         if (i.getAction().toString().contains("ROCHADE")) sum += 5;
-        else if (actor instanceof King/* && actor.getLastMove() == -1*/) sum += -90;
+        else if (actor instanceof King/* && actor.getLastMove() == -1*/) sum += -5;
 
 
         if ((actor instanceof Pawn && actor.getX() == 3) && i.getY() == 3) {
@@ -101,10 +101,12 @@ public class MiniMax {
         if (i.getY() == 4 && i.getX() == 4) sum += 5;
 
 
-        if (actor.getLastMove() == board.getRound()) sum += -5;
+
+
+        if (actor.getLastMove() == board.getRound()) sum += -7;
 
         if (actor instanceof Knight || actor instanceof Bishop)
-            if (actor.getLastMove() == -1 && board.getRound() < 10) sum += 5;
+            if (board.getRound() < 10) sum += 5;
 
         return sum;
     }

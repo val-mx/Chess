@@ -137,7 +137,7 @@ public class ChessBoard {
         return result;
     }
 
-    private LinkedList<MoveInfo> getAllPossibleMoves() {
+    public LinkedList<MoveInfo> getAllPossibleMoves() {
         final LinkedList<MoveInfo> allPossibleMovesPlayer = new LinkedList<>();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
