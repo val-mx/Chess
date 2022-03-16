@@ -73,15 +73,15 @@ public class WeightCalculator {
     };
 
     private static int[][] queenValues = {
-                    {-20, -10, -10, -5, -5, -10, -10, -20},
-                    {-10, 0, 0, 0, 0, 0, 0, -10},
-                    {-10, 0, 5, 5, 5, 5, 0, -10},
-                    {-5, 0, 5, 5, 5, 5, 0, -5},
-                    {0, 0, 5, 5, 5, 5, 0, -5},
-                    {-10, 5, 5, 5, 5, 5, 0, -10},
-                    {-10, 0, 5, 0, 0, 0, 0, -10},
-                    {-20, -10, -10, -5, -5, -10, -10, -20}
-            };
+            {-20, -10, -10, -5, -5, -10, -10, -20},
+            {-10, 0, 0, 0, 0, 0, 0, -10},
+            {-10, 0, 5, 5, 5, 5, 0, -10},
+            {-5, 0, 5, 5, 5, 5, 0, -5},
+            {0, 0, 5, 5, 5, 5, 0, -5},
+            {-10, 5, 5, 5, 5, 5, 0, -10},
+            {-10, 0, 5, 0, 0, 0, 0, -10},
+            {-20, -10, -10, -5, -5, -10, -10, -20}
+    };
 
 
     public static MoveInfo getBestPossibleMove(Figure[][] pieces, ChessView.ResultRunnable r, boolean player) {
@@ -90,10 +90,10 @@ public class WeightCalculator {
             @Override
             protected MoveInfo doInBackground(Void... voids) {
 //                return minMax(pieces, 5, true);
-                if(player)
-                return new MiniMax().min(new ChessBoard(copyArray(pieces)),4);
+                if (player)
+                    return new MiniMax().min(new ChessBoard(copyArray(pieces)), 4, 0);
                 else
-                    return new MiniMax().max(new ChessBoard(copyArray(pieces)),4);
+                    return new MiniMax().max(new ChessBoard(copyArray(pieces)), 4, 0);
             }
 
             @Override
@@ -187,7 +187,6 @@ public class WeightCalculator {
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
                 sum += getWorth(figs[x][y]);
-                Figure figure = figs[x][y];
 //                if(figure != null)
 //                sum+= getPosWorth(figure);
             }
@@ -244,21 +243,22 @@ public class WeightCalculator {
         int x = f.getX();
         int y = f.getY();
 
-        if(f.getPlayer()) {
-            y = 7-y;
+        if (f.getPlayer()) {
+            y = 7 - y;
         }
 
-            if(f instanceof Rook) {
-                returnValue = rookValues[x][y];
-            } else if(f instanceof Pawn) {
-                returnValue = pawnValues[x][y];
-            } else if(f instanceof Knight) {
-                returnValue = knightValues[x][y];
-            } else if(f instanceof Bishop) {
-                returnValue = bishopValues[x][y];
-            }if(f instanceof Queen) {
-                returnValue = queenValues[x][y];
-            }
+        if (f instanceof Rook) {
+            returnValue = rookValues[x][y];
+        } else if (f instanceof Pawn) {
+            returnValue = pawnValues[x][y];
+        } else if (f instanceof Knight) {
+            returnValue = knightValues[x][y];
+        } else if (f instanceof Bishop) {
+            returnValue = bishopValues[x][y];
+        }
+        if (f instanceof Queen) {
+            returnValue = queenValues[x][y];
+        }
 
         if (f.getPlayer())
             return returnValue;

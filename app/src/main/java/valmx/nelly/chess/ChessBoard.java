@@ -38,7 +38,7 @@ public class ChessBoard {
 
     private Figure[][] board = new Figure[8][8];
 
-    private boolean player;
+    private boolean player = false;
 
     private int round = 0;
     private int roundCounter = 0;
@@ -152,7 +152,7 @@ public class ChessBoard {
 
     public void doAction(MoveInfo i) {
         roundCounter++;
-        round = roundCounter/2;
+        round = roundCounter / 2;
         doAction(i, board);
     }
 
@@ -223,13 +223,14 @@ public class ChessBoard {
 
         }
 
+        changePlayer();
+
     }
 
     public void undoLastAction() {
         if (!lastActionStack.empty()) {
             LastActionInfo lastAction = lastActionStack.pop();
-
-
+            changePlayer();
             if (lastAction.isRochade) {
 
                 final Figure actor = lastAction.i.getActor();
@@ -265,7 +266,7 @@ public class ChessBoard {
             actor.setY(y);
 //            actor.setLastMove(--round);
             roundCounter--;
-            round = roundCounter/2;
+            round = roundCounter / 2;
             actor.setLastMove(round);
         }
     }
@@ -327,6 +328,24 @@ public class ChessBoard {
 
     public Figure getFigure(int x, int y) {
         return board[x][y];
+    }
+
+    public LinkedList<Figure> getFigures(boolean team) {
+
+        final LinkedList<Figure> result = new LinkedList<>();
+
+
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                final Figure figure = board[x][y];
+                if (figure != null && figure.getPlayer() == team) {
+                    result.add(figure);
+                }
+            }
+        }
+
+        return result;
+
     }
 
     public void setFigure(int x, int y, Figure fig) {

@@ -25,6 +25,10 @@ public abstract class Figure {
         return lastMove;
     }
 
+    public int getLastMoveCache() {
+        return lastMoveCache;
+    }
+
     public Figure(boolean team, int x, int y) {
         this.team = team;
         this.x = x;

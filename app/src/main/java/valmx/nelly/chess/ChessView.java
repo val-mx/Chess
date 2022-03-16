@@ -97,7 +97,9 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
 
             drawCheckerBoard();
             drawFigures();
-            doBotAction(false);
+
+            doBotAction(true);
+
             invalidate();
 
         });
@@ -245,7 +247,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
                             doAction(activeFigure, i);
                             activeFigure = null;
                             activeMoveInfo = null;
-                            doBotAction(false);
+                            doBotAction(true);
                             if (!isAnimationActive)
 
                                 drawRoutine();
@@ -264,7 +266,7 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
                     if (!chessBoard.getPlayer() == temp.getPlayer()) {
                         activeFigure = temp;
 
-                        activeMoveInfo = chessBoard.getLegalMoves(temp);
+                        activeMoveInfo = temp.getPossibleMoves(chessBoard.getBoard());
                     }
                 }
 
@@ -305,7 +307,6 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         lastMove = i;
         f.setLastMove(ROUND);
 
-        chessBoard.changePlayer();
         listener.onNewRound(chessBoard);
 
     }
