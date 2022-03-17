@@ -1,6 +1,7 @@
 package valmx.nelly.chess;
 
 import android.os.AsyncTask;
+import android.os.Handler;
 
 import java.util.LinkedList;
 
@@ -91,14 +92,21 @@ public class WeightCalculator {
             protected MoveInfo doInBackground(Void... voids) {
 //                return minMax(pieces, 5, true);
                 if (player)
-                    return new MiniMax().min(new ChessBoard(copyArray(pieces)), 4, 0);
+                    return new MiniMax().max(new ChessBoard(copyArray(pieces)), 8, 0, 100000000 * -1, 100000000);
                 else
-                    return new MiniMax().max(new ChessBoard(copyArray(pieces)), 4, 0);
+                    return new MiniMax().min(new ChessBoard(copyArray(pieces)), 8, 0, 100000000 * -1, 100000000);
             }
 
             @Override
             protected void onPostExecute(MoveInfo moveInfo) {
-                r.run(moveInfo);
+
+                 new Handler().postDelayed(new Runnable() {
+                     @Override
+                     public void run() {
+                         r.run(moveInfo);
+                     }
+                 }, 100);
+
             }
         };
         task.execute();
@@ -230,7 +238,7 @@ public class WeightCalculator {
         if (f instanceof Pawn) returnValue = 10;
         if (f instanceof Queen) returnValue = 85;
         if (f instanceof Rook) returnValue = 50;
-        if (f instanceof King) returnValue = (int) Math.pow(10, 5);
+        if (f instanceof King) returnValue = 1000;
         if (f instanceof Bishop) returnValue = 30;
         if (f instanceof Knight) returnValue = 30;
         if (f.getPlayer())

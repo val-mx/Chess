@@ -18,15 +18,15 @@ public class MiniMax {
      * @return
      */
 
-    public MoveInfo min(ChessBoard b, int depth, int extraSum) {
+    public MoveInfo max(ChessBoard b, int depth, int extraSum, int alpha, int beta) {
 
         // Returning end worth when depth 0 is reached
-
+        b.setPlayer(true);
         if (depth == 0) {
             final MoveInfo moveInfo = new MoveInfo();
 
-            extraSum += getStellungExtraWorth(b,true);
-            extraSum -= getStellungExtraWorth(b,false);
+            extraSum -= getStellungExtraWorth(b, false);
+            extraSum += getStellungExtraWorth(b, true);
 
             moveInfo.setWorth(WeightCalculator.getWortSum(b.getBoard()) + extraSum);
 
@@ -43,31 +43,41 @@ public class MiniMax {
 
             b.doAction(i);
 
-            i.setWorth(max(b, depth - 1, extraSum += getMoveExtraWorth(i, b)).getWorth());
+            i.setWorth(min(b, depth - 1, extraSum -= getMoveExtraWorth(i, b), alpha, beta).getWorth());
 
             b.undoLastAction();
 
             // Replacing best move if this one is better
 
+
             if (bestMove == null || i.getWorth() > bestMove.getWorth()) bestMove = i;
+
+            // Pruning
+
+            if (bestMove.getWorth() <= alpha) break;
+
+            if (beta > bestMove.getWorth()) beta = bestMove.getWorth();
 
         }
 
         return bestMove;
     }
 
-    public MoveInfo max(ChessBoard b, int depth, int extraSum) {
+    public MoveInfo min(ChessBoard b, int depth, int extraSum, int alpha, int beta) {
 
         // Returning end worth when depth 0 is reached
 
+        b.setPlayer(false);
+
         if (depth == 0) {
             final MoveInfo moveInfo = new MoveInfo();
-            extraSum += getStellungExtraWorth(b,true);
-            extraSum -= getStellungExtraWorth(b,false);
+            extraSum -= getStellungExtraWorth(b, false);
+            extraSum += getStellungExtraWorth(b, true);
             moveInfo.setWorth(WeightCalculator.getWortSum(b.getBoard()) + extraSum);
 
             return moveInfo;
         }
+
 
         final LinkedList<MoveInfo> allPossibleMoves = WeightCalculator.getAllPossibleMoves(b, false);
 
@@ -79,13 +89,18 @@ public class MiniMax {
 
             b.doAction(i);
 
-            i.setWorth(min(b, depth - 1, extraSum += getMoveExtraWorth(i, b) * -1).getWorth());
+            i.setWorth(max(b, depth - 1, extraSum += getMoveExtraWorth(i, b), alpha, beta).getWorth());
 
             b.undoLastAction();
 
             // Replacing best move if this one is better
 
             if (bestMove == null || i.getWorth() < bestMove.getWorth()) bestMove = i;
+
+            if (bestMove.getWorth() >= beta) break;
+
+            if (alpha < bestMove.getWorth()) alpha = bestMove.getWorth();
+
 
         }
 
@@ -99,17 +114,19 @@ public class MiniMax {
         int sum = 0;
 
         if (i.getAction().toString().contains("ROCHADE")) sum += 5;
-        else if (actor instanceof King/* && actor.getLastMove() == -1*/) sum += -5;
+        else if (actor instanceof King/* && actor.getLastMove() == -1*/) sum += -2;
+
+
+//        if (board.isKingInCheck()) sum += 20;
 
 
 //        if ((actor instanceof Pawn && actor.getX() == 3) && i.getY() == 3) {
 //            if (board.getRound() < 3) sum += 1000;
 //        }
 
-        if (actor instanceof Pawn && i.getAction() == MoveInfo.Action.CAPTURE) sum += 4;
 
 
-        return sum;
+        return 0;
     }
 
     private int getStellungExtraWorth(ChessBoard b, boolean player) {
@@ -123,23 +140,32 @@ public class MiniMax {
 
         final LinkedList<Figure> figures = b.getFigures(player);
 
+        boolean isKingAlive = false;
+
         for (Figure f : figures) {
+
+            if (f instanceof King) isKingAlive = true;
 
             if (f instanceof Bishop || f instanceof Knight) {
 
                 if (f.getLastMove() == -1) {
-                    sum -= 5;
+                    sum += 5;
                 }
 
             }
 
-            if (f.getLastMove() == f.getLastMoveCache()-1) {
-                sum -= 15;
-            }
+
+//            if (f.getLastMove() == f.getLastMoveCache() - 1) {
+//                sum -= 15;
+//            }
 
         }
 
-        return sum;
+/*        if (!isKingAlive) {
+            sum -= 10000;
+        }*/
+
+        return 0;
 
 
     }

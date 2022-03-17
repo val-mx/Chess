@@ -211,13 +211,26 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
     private boolean doBotAction(boolean player) {
 
 
-        ResultRunnable r = i -> {
-            doAction(i.getActor(), i);
-            drawRoutine();
-            doBotAction(!player);
+        ResultRunnable r = new ResultRunnable() {
+            @Override
+            public void run(MoveInfo i) {
+                {
+                    doAction(i.getActor(), i);
+                    drawRoutine();
+//                    doBotAction(!player);
 
 
+                };
+            }
+
+            @Override
+            public void run() {
+
+            }
         };
+
+
+
         WeightCalculator.getBestPossibleMove(chessBoard.getBoard(), r, player);
 
 
@@ -435,8 +448,11 @@ public class ChessView extends androidx.appcompat.widget.AppCompatImageView impl
         public void onNewRound(ChessBoard board);
     }
 
-    public interface ResultRunnable {
+    public interface ResultRunnable extends Runnable {
         void run(MoveInfo i);
+
+        @Override
+        void run();
     }
 
     protected class AnimationBundle {
